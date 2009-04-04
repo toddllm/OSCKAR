@@ -1,0 +1,180 @@
+#!/bin/bash
+set -x
+mkdir -p ~/.osckar/oapvmxml
+mkdir ~/.osckar/oapvmimg
+mkdir ~/.osckar/oapvmsaves
+
+# If a custom VM image exists, use it. Otherwise, spontaneously create a VM
+# image from our template in the /etc/osckar/oapvm/vms/ directory.
+if [ ! -e "~/.osckar/oapvmimg/${1}-base.qcow2" ]
+then
+    qemu-img create -f qcow2 -b /etc/osckar/oapvm/vms/thin-ubuntu-base.qcow2 \
+	~/.osckar/oapvmimg/${1}-base.qcow2
+fi
+
+
+
+results=`virsh list | grep thin-${1} | awk '{print $3}'`
+results=`echo ${results} | tr -d [:space:]`
+
+
+# Create a temporary COW image for booting and running commands inside, if a VM
+# that is using it does not already exist. This will be overwritten each time a
+# new VM is started.
+if [ "$results" != "running" ]
+then
+    qemu-img create -f qcow2 -b ~/.osckar/oapvmimg/${1}-base.qcow2 \
+	~/.osckar/oapvmimg/${1}-temp.qcow2
+fi
+
+
+
+# Determine VM's MAC and IPAddr index
+touch ~/.osckar/oapvmnet
+grep ${1} ~/.osckar/oapvmnet
+if [ $? -eq 0 ]
+then
+    netindex=`grep ${1} ~/.osckar/oapvmnet | awk '{print $2}'`
+    netindex=`echo ${netindex} | tr -d [:space:]`
+else
+    netindex=`tail -n 1 ~/.osckar/oapvmnet | awk '{print $2}'`
+    netindex=`echo ${netindex} | tr -d [:space:]`
+    let "netindex=${netindex}+1"
+    if [ $netindex -lt 2 ] #first use of oapvm
+    then
+	if [ ! -e ~/.ssh ]
+	then
+	    mkdir ~/.ssh
+	fi
+	    cat /etc/osckar/oapvm/known_hosts_entry >> ~/.ssh/known_hosts
+	let "netindex=2"
+    fi
+    echo "${1} ${netindex}" >> ~/.osckar/oapvmnet
+fi
+
+
+if [ ${netindex} -lt 16 ]
+then
+    hexindex=`printf "0%x" ${netindex} | tr [a-z] [A-Z]`
+else
+    hexindex=`printf "%x" ${netindex} | tr [a-z] [A-Z]`
+fi
+
+cd ~
+homedir=`pwd`
+
+# If a VM config file has never been created (and possibly customized) for this
+# command, create one based on the default template, below.
+if [ ! -e "~/.osckar/oapvmxml/${1}.xml" ]
+then
+    cat <<EOF > ~/.osckar/oapvmxml/${1}.xml
+    <domain type='kvm'>
+    <name>thin-${1}</name>
+    <memory>128000</memory>
+    <currentMemory>128000</currentMemory>
+    <vcpu>1</vcpu>
+    <os>
+    <type>hvm</type>
+    <boot dev='hd'/>
+    </os>
+    <clock offset='utc'/>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>destroy</on_reboot>
+    <on_crash>destroy</on_crash>
+    <devices>
+    <emulator>/usr/bin/kvm</emulator>
+    <disk type='file' device='disk'>
+    <source file='${homedir}/.osckar/oapvmimg/${1}-temp.qcow2'/>
+    <target dev='hda' bus='ide'/>
+    </disk>
+    <interface type='bridge'>
+    <source bridge='virbr0'/>
+    </interface>
+    <interface type='bridge'>
+    <mac address='AA:BB:CC:DD:EE:${hexindex}'/>
+    <source bridge='virbr1'/>
+    </interface>
+    <input type='mouse' bus='ps2'/>
+    <graphics type='vnc' port='-1' listen='127.0.0.1'/>
+    </devices>
+    </domain>
+EOF
+fi
+
+
+
+## Double-check that the bridge exists and is set up correctly.
+#sudo brctl addbr osckarcontrol
+#sudo ifconfig osckarcontrol up
+#sudo ifconfig osckarcontrol 10.100.200.0
+
+
+hostname="10.100.200.${netindex}"
+
+# This host's key is pre-populated in known_hosts so that the other VMs based on
+# this image can use it as a HostKeyAlias in the .ssh/config 
+oapvm_base_img_hostip="10.100.200.2"
+
+#add HostKeyAlias for this VM to the local .ssh/config
+
+if [ $hostname != $oapvm_base_img_hostip ]
+then
+    grep ${hostname} ~/.ssh/config
+    if [  $? -ne 0 ]
+    then
+	cat <<EOF >> ~/.ssh/config
+Host ${hostname}
+  HostKeyAlias ${oapvm_base_img_hostip}
+  HostName ${hostname}
+  Port 22
+  CheckHostIP no
+EOF
+    fi
+fi
+
+
+# Does quick-to-restore savepoint exist? If so, restore it! If not, create it!
+if [ -e ~/.osckar/oapvmsaves/${1} ]
+then
+    virsh restore ${homedir}/.osckar/oapvmsaves/${1}
+else
+    virsh create ${homedir}/.osckar/oapvmxml/${1}.xml
+    sleep 30
+
+    if [ ! -e ~/.ssh/id_rsa.pub ]
+    then
+      ssh-keygen -f ~/.ssh/id_rsa -N ''
+    fi
+#    scp -i /etc/osckar/oapvm/id_rsa ~/.ssh/id_rsa.pub osckar@${hostname}:~/.ssh/authorized_keys
+# Due to Ubuntu openssh bug #201786 add SSH_AUTH_SOCK=0
+    ssh-add -L | SSH_AUTH_SOCK=0 ssh -i /etc/osckar/oapvm/id_rsa osckar@${hostname} "umask 077; test -d .ssh || mkdir .ssh ; cat > .ssh/authorized_keys" || exit 1
+    
+    virsh save thin-${1} ${homedir}/.osckar/oapvmsaves/${1}
+    sleep 5
+    virsh restore ${homedir}/.osckar/oapvmsaves/${1}
+fi
+
+
+# Wait until SSH is ready to serve us
+while
+[ "$res" != "open" ]
+do
+    res=`nmap ${hostname} -p 22 | grep ssh | awk '{print $2}'`
+#    sleep 1
+done
+
+#sleep 2
+
+# Launch our application!
+#while [ 1 ]
+#do
+
+# Due to Ubuntu openssh bug #201786 add SSH_AUTH_SOCK=0
+# -v for debugging non-closing with -X
+SSH_AUTH_SOCK=0 ssh -v -X osckar@${hostname} ${1}
+#done
+
+# TODO: Next, ssh into the same VM, run w, and see if other users are connected.
+# If so, this script exits.  If not, and we're the only ones left, we destroy VM
+
+
