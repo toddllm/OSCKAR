@@ -12,7 +12,7 @@ incremental backups - ability to rollback (things like .mozilla when they break)
 
 
 ***********************
-sudo time vmbuilder kvm ubuntu --libvirt=qemu:///system --hostname  ubuntu-amd64-desktop-base --addpkg ubuntu-desktop --addpkg openssh-server --removepkg apt-xapian-index --user osckar --pass=osckar --ssh-user-key=/etc/osckar/oapvm/id_rsa.pub --debug -v --rootsize=8000 -mem=512
+sudo time vmbuilder kvm ubuntu --libvirt=qemu:///system --hostname  ubuntu-amd64-desktop-base --addpkg ubuntu-desktop --addpkg openssh-server --removepkg apt-xapian-index --user osckar --pass=osckar --ssh-user-key=/etc/osckar/oapvm/id_rsa.pub --debug -v --rootsize=8000 --mem=512
 ***********************
 
 
