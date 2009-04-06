@@ -1,18 +1,10 @@
 <network>
-  <name>osckarcontrol</name>
-  <uuid>621eb8e8-7898-c17e-44f7-93c9afd15d13</uuid>
-  <bridge name='virbr1' stp='on' forwardDelay='0' />
-  <ip address='10.100.200.1' netmask='255.255.255.0'>
+  <name>default</name>
+  <bridge name="virbr0" />
+  <forward/>
+  <ip address="192.168.122.1" netmask="255.255.255.0">
     <dhcp>
-      <range start='10.100.200.2' end='10.100.200.254' />
-      <host mac='AA:BB:CC:DD:EE:02' ip='10.100.200.2'/>
-      <host mac='AA:BB:CC:DD:EE:03' ip='10.100.200.3'/>
-      <host mac='AA:BB:CC:DD:EE:04' ip='10.100.200.4'/>
-      <host mac='AA:BB:CC:DD:EE:05' ip='10.100.200.5'/>
-      <host mac='AA:BB:CC:DD:EE:06' ip='10.100.200.6'/>
-      <host mac='AA:BB:CC:DD:EE:07' ip='10.100.200.7'/>
-      <host mac='AA:BB:CC:DD:EE:08' ip='10.100.200.8'/>
-      <host mac='AA:BB:CC:DD:EE:09' ip='10.100.200.9'/>
+      <range start="192.168.122.2" end="192.168.122.254" />
     </dhcp>
   </ip>
 </network>
