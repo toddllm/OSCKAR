@@ -1,0 +1,14 @@
+
+
+#Get the code
+sudo apt-get install subversion
+svn checkout http://svn.cslabs.clarkson.edu/svn/osckar
+
+#Install
+cd osckar
+sudo ./install.sh
+
+#Known bug, .ssh/known_hosts first time setup is off
+#Need to manually clear the file and accept SSH key for the first host only
+
+
