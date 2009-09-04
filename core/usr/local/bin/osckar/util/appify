@@ -1,0 +1,79 @@
+#!/usr/bin/python
+
+# Appify - Run user apps in separate VMs
+#   (application segregation through OSCKAR)
+#
+# Todd Deshane and Patrick F. Wilbur
+
+import os,sys
+sys.path.append('/usr/local/share/osckar/lib/')
+import osckar as o
+
+osckar = o.Osckar()
+
+
+path='/etc/kiosckar/contracts/'
+
+if len(sys.argv) > 1:
+    port = sys.argv[1]
+else:
+    port = 5000
+
+osckar.connect('localhost',port)
+osckar.registerEvent('VM_START_SUCCEEDED')
+
+def buildVMC(vm_name, install_mirror):
+    file = open("/etc/kiosckar/kiosk_template.vmt")
+    vmt = file.read()
+    file.close()
+    vmc = vmt.replace('$VM_NAME', vm_name)
+    vmc = vmc.replace('$INSTALL_MIRROR', install_mirror)
+    return vmc
+
+def addVM():
+    default_install_mirror = "http://archive.ubuntu.com/ubuntu"
+    vm_name = raw_input('Enter VM name: ')
+    install_mirror = raw_input('Enter alternate install mirror: press enter for default of [' + default_install_mirror + ']')
+    install_mirror.strip()
+    if(len(install_mirror) == 0):
+        install_mirror = default_install_mirror
+    vmc = buildVMC(vm_name, install_mirror)
+    file = open("/etc/kiosckar/contracts/" + vm_name, "w")
+    file.write(vmc)
+    file.close()
+    osckar.signal('IMPORT_VMC', vmc)
+
+def launch(VM):
+    f = open(path + VM, 'r')
+    osckar.signal('IMPORT_VMC', f.read())
+    osckar.signal('START_VM', VM)
+    while osckar.waitForEvent('VM_START_SUCCEEDED') != VM:
+        pass
+    os.system('virt-viewer ' + VM)
+
+while True:
+    os.system("reset")
+    VMs = os.listdir(path)
+    print 'Menu:'
+    i = 1
+    for VM in VMs:
+        print '',i,VM
+        i += 1
+
+    print '',i,'Add VM'
+    print '',i+1,'Exit'
+
+    try:
+        choice = raw_input('Selection:')
+        choice = int(choice)
+    except:
+        print 'Invalid input'
+        choice = 0
+    if choice == i+1:
+        sys.exit(0)
+    elif choice == i:
+        addVM()
+    elif choice > 0 and choice < i:
+        launch(VMs[choice-1])
+
+    print ''

@@ -1,0 +1,126 @@
+#!/usr/bin/python -Wall
+
+#PolicyManager.py
+
+import xml.dom.minidom
+from xml.dom.minidom import Node
+
+import socket
+import os
+import sys
+from string import Template
+sys.path.append('/usr/local/share/osckar/lib/')
+import comm as c
+
+
+path = "/etc/osckar/PolicyManager/"
+if not os.path.isdir(path):
+    os.makedirs(path)
+
+responseRegistry = {}
+
+def sendSubContracts(contractFile,rulesetSuffix, eventSuffix):
+    if os.path.exists(contractFile):
+        doc = xml.dom.minidom.parse(contractFile)
+    else: #no contract file, print error listen for next event
+        print contractFile + " does not exist"
+        return False
+    rulesets = {}
+    # Send subcontracts to each ruleset handler
+    for ruleset in doc.getElementsByTagName("ruleset"): 
+        rules = ""
+        for line in ruleset.childNodes:
+            rules += line.toxml()
+        type = str(ruleset.getAttribute("type"))
+        rulesets[type] = '<ruleset type="' + type + '"' + rulesetSuffix  + '>' + rules + '</ruleset>'
+    for type in rulesets.keys():
+        sock.send('signal' + comm.makeChunk(type + eventSuffix) + comm.makeChunk(rulesets[type]))
+    return True
+
+def registerResponse(signaledEventName,responseEventName,responseEventArg):
+    if signaledEventName not in responseRegistry:
+        # add an empty list for this mapping  <- this is a cryptic comment, hence reusable
+        responseRegistry[signaledEventName] = []
+    # Add response to an event
+    responseRegistry[signaledEventName].append((responseEventName,responseEventArg))
+
+def importContract(contractXML):
+    doc = xml.dom.minidom.parseString(contractXML)
+    contractId = (doc.getElementsByTagName("contract"))[0].getAttribute("id")
+    outFile = open(path + 'contracts/' + contractId + '.xml', "w")
+    outFile.write(contractXML)
+    outFile.close()
+    
+
+comm = c.Comm()
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+sock.connect(('localhost', int(sys.argv[1])))
+print 'Policy Manager'
+print 'connected on port',sys.argv[1]
+
+
+sock.send('regevt' + comm.makeChunk('response.global_init'))
+sock.send('regevt' + comm.makeChunk('PolicyManager.import_contract'))
+sock.send('regevt' + comm.makeChunk('PolicyManager.send_subcontracts'))
+
+
+globalContractFile = path + 'global_policy.xml'
+sendSubContracts(globalContractFile,"",".global_init")
+
+
+while 1:
+    procedure = sock.recv(6)
+    
+    #if socket to EventChat dies, bail out
+    if not procedure:
+        break
+    
+    if procedure == 'signal':
+        eventName = comm.readChunk(sock)
+        eventArgs = comm.readChunk(sock)
+        if(eventName == "response.global_init"):
+            doc = xml.dom.minidom.parseString(eventArgs)
+            eventsToHandle = doc.getElementsByTagName("handle")
+            for signaledEvent in eventsToHandle:
+                signaledEventName = str(signaledEvent.getAttribute("event"))
+                print "On ",signaledEventName
+                for reactionEvent in signaledEvent.getElementsByTagName("raise"):
+                    reactionEventName = str(reactionEvent.getAttribute("event"))
+                    reactionEventArg = str(reactionEvent.getAttribute("argument"))
+                    print "  ",reactionEventName,reactionEventArg
+                    registerResponse(signaledEventName,reactionEventName,reactionEventArg)
+                sock.send('regevt' + comm.makeChunk(signaledEventName))
+        elif(eventName == "PolicyManager.import_contract"):        
+            importContract(eventArg)
+        elif(eventName == "PolicyManager.send_subcontracts"):
+            contractId = eventArg
+            contractFile = path + 'contracts/' + contractId + '.xml'
+            sendSubContracts(contractFile," id='" + contractId + "'",".init")
+        else:
+            responses = responseRegistry[eventName]
+            print eventName, "so:"
+            for response in responses:
+                (responseEventName,responseEventArg) = response
+                print "  ",responseEventName,responseEventArg
+                responseEventArg = responseEventArg.replace('$ARG', eventArgs)
+                # The following code "duplication" is necessary because we are not threaded.
+                # If we were threaded, we would also need to implement EventChat replies, then
+                # confirm from interfaces' replies that all the .inits completed before we 
+                # signal the vmm.start_vm.  The code here intercepts what we need to do
+                # ourselves here in PolicyManager rather than sending it over EventChat.
+                # Note that the similar code above is in case global policy doesn't assign the
+                # handling of the global event START_VM to us.
+                if(responseEventName == "PolicyManager.import_contract"):        
+                    importContract(responseEventArg)
+                elif(responseEventName == "PolicyManager.send_subcontracts"):
+                    contractId = responseEventArg
+                    contractFile = path + 'contracts/' + contractId + '.xml'
+                    sendSubContracts(contractFile," id='" + contractId + "'",".init")
+                else:
+                    sock.send('signal' + comm.makeChunk(responseEventName) + comm.makeChunk(responseEventArg))
+
+
+            
+

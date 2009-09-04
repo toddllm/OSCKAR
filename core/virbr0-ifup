@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# NOTE: For this script to operate properly, it is expected that
+#       you have a virbr0
+
+BRIDGE=virbr0
+
+/sbin/ifconfig $1 0.0.0.0 up
+/usr/sbin/brctl addif $BRIDGE $1

@@ -1,0 +1,31 @@
+<contract id="builder">
+  <ruleset type="builder">
+
+    <os type="linux" flavor="ubuntu" version="9.04" />
+    
+    <disk type="disk" size="10240" sparse="true" format="qcow2">ubuntu-9.04.qcow2</disk>
+    
+    <partitions>
+      <partition type="primary" filesystem="ext3" mountpoint="/" size="9216" bootable="true">1</partition>
+      <partition type="extended">2</partition>
+      <partition type="logical" filesystem="swap" size="1024">5</partition>
+    </partitions>
+    
+    <users>
+      <user logindisabled="true">root</user>
+      <user password="ubuntu" groups="ubuntu,admin">ubuntu</user>
+    </users>
+    
+    <sshkeys>
+      <sshkey user="ubuntu">/etc/osckar/BuilderInterface/sshkeys/id_rsa.pub</sshkey>
+    </sshkeys>
+
+    <packages>
+      <package name="openssh-server" action="add" />
+      <package name="sl" action="add" />    
+    </packages>
+
+    <installmirror>http://mirror.clarkson.edu/ubuntu</installmirror>
+    
+  </ruleset>
+</contract>

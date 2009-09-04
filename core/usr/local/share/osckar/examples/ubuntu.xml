@@ -1,0 +1,20 @@
+<contract type="machine" id="ubuntu">
+  <ruleset type="vmm">
+    <memory>128</memory>
+    ...
+  </ruleset>
+
+  <ruleset type="firewall" optional="true">
+    <bandwidth-limit onViolation="FIREWALL:EXCESSIVE_BANDWIDTH_USAGE">100kbps</bandwidth-limit>
+  </ruleset>
+
+  <ruleset type="reaction">
+    <handle event="FIREWALL:EXCESSIVE_BANDWIDTH_USAGE">
+      <raise event="log" argument="The VM $ARG just tried to spam" />
+      <raise event="vmm.destroy_vm" argument="$ARG" />
+      <raise event="ui.alert" argument="Your firefox application has been hijacked. We are rebuilding now." />
+      <raise event="vmm.rollback" argument="$ARG" />
+      <raise event="vmm.start_vm" argument="$ARG" />
+    </handle>
+  </ruleset>
+</contract>
