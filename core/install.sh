@@ -32,9 +32,9 @@ sudo useradd eventchat -s /bin/sh
 sudo useradd policymanager -s /bin/sh
 sudo useradd vmminterface -s /bin/sh
 sudo find . -name '*~' -exec rm {} \;
-sudo cp -r ./usr/local/bin/* /usr/local/bin/
-sudo cp -r ./usr/local/share/* /usr/local/share/
+sudo cp -r ./usr/sbin/* /usr/sbin/
+sudo cp -r ./usr/share/* /usr/share/
 sudo cp -r ./etc/* /etc/
-sudo mkdir -p /var/lib/osckar/images
+sudo cp -r ./var/lib/* /var/lib/
 echo 'Done'
 
