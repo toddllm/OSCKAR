@@ -1,6 +1,6 @@
-<contract type="machine" id="ubuntu">
+<contract id="ubuntu">
   <ruleset type="vmm-libvirt">
-    <domain type='kvm'>	
+    <domain type="kvm">	
       <name>ubuntu</name>
       <uuid>03c03e0f-0a94-c167-5257-f52d772b1ec1</uuid>
       <memory>131072</memory>
@@ -34,4 +34,3 @@
     </domain>
   </ruleset>
 </contract>
-    
