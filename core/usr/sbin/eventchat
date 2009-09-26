@@ -1,7 +1,9 @@
+#!/usr/bin/python
+
 import SocketServer
 import threading
 import sys
-sys.path.append('/usr/local/share/osckar/lib/')
+sys.path.append('/usr/share/osckar/lib/')
 import comm as c
 
 #Global variables

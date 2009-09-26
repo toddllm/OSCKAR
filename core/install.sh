@@ -20,17 +20,18 @@ sudo apt-get install -y qemu ubuntu-virt-mgmt
 echo 'Done'
 
 #patch vmbuilder due to bugs
-echo -n 'Patching vmbuilder (fixing bugs in vmbuilder)... '
-sudo patch -p0 -N < ./patches/vmbuilder.patch
-sudo patch -p0 -N < ./patches/jdstrand.patch
-sudo patch -p0 -N < ./patches/jdstrand2.patch
-echo 'Done'
+#echo -n 'Patching vmbuilder (fixing bugs in vmbuilder)... '
+#sudo patch -p0 -N < ./patches/vmbuilder.patch
+#sudo patch -p0 -N < ./patches/jdstrand.patch
+#sudo patch -p0 -N < ./patches/jdstrand2.patch
+#echo 'Done'
 
 #install OSCKARcore
 echo -n 'Installing OSCKARcore-alpha... '
 sudo useradd eventchat -s /bin/sh
 sudo useradd policymanager -s /bin/sh
 sudo useradd vmminterface -s /bin/sh
+sudo chown -R policymanager /var/lib/policymanager
 sudo find . -name '*~' -exec rm {} \;
 sudo cp -r ./usr/sbin/* /usr/sbin/
 sudo cp -r ./usr/share/* /usr/share/

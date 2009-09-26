@@ -9,13 +9,18 @@ import socket
 import os
 import sys
 from string import Template
-sys.path.append('/usr/local/share/osckar/lib/')
+sys.path.append('/usr/share/osckar/lib/')
 import comm as c
 
 
-path = "/etc/osckar/PolicyManager/"
+config_path = "/etc/policymanager/"
+if not os.path.isdir(config_path):
+    print "Fatal error: policy manager configuration does not exist"
+    sys.exit(1)
+path = "/var/lib/policymanager/"
 if not os.path.isdir(path):
-    os.makedirs(path)
+    print "Fatal error: policy manager contract storage does not exist"
+    sys.exit(1)
 
 responseRegistry = {}
 
