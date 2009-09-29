@@ -1,0 +1,7 @@
+
+Make a generic osckar command and init script
+
+here is what needs to happen:
+eventchat PORT
+policymanager PORT
+<This is still incomplete>
