@@ -3,7 +3,7 @@
 # Appify - Run user apps in separate VMs
 #   (application segregation through OSCKAR)
 #
-# Todd Deshane and Patrick F. Wilbur
+# Copyright 2009 Todd Deshane and Patrick F. Wilbur
 
 import os,sys
 sys.path.append('/usr/local/share/osckar/lib/')
