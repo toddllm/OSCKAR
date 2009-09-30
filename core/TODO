@@ -1,7 +1,4 @@
+Make osckar init script based on working osckar command
+fix .svn directories being included in install due to subdirectory inclusion
+fix cowpath in vmminterface
 
-Make a generic osckar command and init script
-
-here is what needs to happen:
-eventchat PORT
-policymanager PORT
-<This is still incomplete>
