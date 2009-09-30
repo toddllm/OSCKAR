@@ -1,0 +1,13 @@
+#!/usr/bin/python -Wall
+
+#osckar
+#Copyright Todd Deshane and Patrick F. Wilbur
+
+import sys
+LOGFILE = "/var/log/eventchat/eventchat.log"
+PORT = sys.argv[1]
+
+os.system("su eventchat -c eventchat" + PORT + "2>&1 >" + LOGFILE + " &")
+os.system("su policymanager -c policymanager" + port + "2>&1 >" + LOGFILE + " &")
+os.system("su vmminterface -c vmminterface" + PORT + "2>&1 >" + LOGFILE + " &")
+os.system("su builderinterface -c builderinterface" + PORT + "2>&1 >" + LOGFILE + " &") 
