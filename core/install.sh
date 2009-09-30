@@ -32,16 +32,35 @@ sudo useradd eventchat -s /bin/sh
 sudo useradd policymanager -s /bin/sh
 sudo useradd vmminterface -s /bin/sh
 sudo useradd builderinterface -s /bin/sh
-sudo find . -name '*~' -exec rm {} \;
-sudo cp -rp ./usr/sbin/* /usr/sbin/
-sudo cp -rp ./usr/share/* /usr/share/
-sudo cp -rp ./etc/* /etc/
-sudo cp -rp ./var/lib/* /var/lib/
-sudo cp -rp ./var/log/* /var/log/
+
+
+#make installable/clean distribution of osckar
+mkdir -p ./dist/usr/sbin/
+mkdir -p ./dist/usr/share/
+mkdir -p ./dist/etc/
+mkdir -p ./dist/var/lib/
+mkdir -p ./dist/var/log/
+
+sudo cp -rp ./usr/sbin/* ./dist/usr/sbin/
+sudo cp -rp ./usr/share/* ./dist/usr/share/
+sudo cp -rp ./etc/* ./dist/etc/
+sudo cp -rp ./var/lib/* ./dist/var/lib/
+sudo cp -rp ./var/log/* ./dist/var/log/
+
+#clean dist
+sudo find ./dist/ -name '*~' -exec rm {} \;
+find ./dist/ -name '.svn' -exec rm -rf {} \; > /dev/null 2>&1
+
+#install from dist
+sudo cp -rp ./dist/usr/sbin/* /usr/sbin/
+sudo cp -rp ./dist/usr/share/* /usr/share/
+sudo cp -rp ./dist/etc/* /etc/
+sudo cp -rp ./dist/var/lib/* /var/lib/
+sudo cp -rp ./dist/var/log/* /var/log/
 
 #access to contracts
 sudo chown -R policymanager /var/lib/policymanager
-sudo chown -R vmminterface /var/lib/osckar/vmminterface
+sudo chown -R vmminterface /var/lib/osckar/interfaces/vmm
 
 #access to log directories
 sudo chown -R eventchat /var/log/eventchat
