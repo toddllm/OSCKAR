@@ -10,7 +10,7 @@ fi
 
 #install deps
 echo -n 'Installing dependencies... '
-sudo apt-get install -y qemu ubuntu-virt-mgmt 
+sudo apt-get install -y qemu ubuntu-virt-mgmt grub
 
 #install deps specific to development and testing
 #sudo apt-get install -y nautilus-open-terminal emacs openssh-server denyhosts
