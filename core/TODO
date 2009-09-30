@@ -1,4 +1,3 @@
 Make osckar init script based on working osckar command
-fix .svn directories being included in install due to subdirectory inclusion
 fix cowpath in vmminterface
 
