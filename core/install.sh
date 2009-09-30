@@ -31,11 +31,21 @@ echo -n 'Installing OSCKARcore-alpha... '
 sudo useradd eventchat -s /bin/sh
 sudo useradd policymanager -s /bin/sh
 sudo useradd vmminterface -s /bin/sh
-sudo chown -R policymanager /var/lib/policymanager
+sudo useradd builderinterface -s /bin/sh
 sudo find . -name '*~' -exec rm {} \;
 sudo cp -r ./usr/sbin/* /usr/sbin/
 sudo cp -r ./usr/share/* /usr/share/
 sudo cp -r ./etc/* /etc/
 sudo cp -r ./var/lib/* /var/lib/
+sudo cp -r ./var/log/* /var/log/
+
+#access to contracts
+sudo chown -R policymanager /var/lib/policymanager
+
+#access to log directories
+sudo chown -R eventchat /var/log/eventchat
+sudo chown -R policymanager /var/log/policymanager
+sudo chown -R vmminterface /var/log/vmminterface
+sudo chown -R builderinterface /var/log/builderinterface
 echo 'Done'
 
