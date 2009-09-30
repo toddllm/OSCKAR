@@ -3,11 +3,35 @@
 #osckar
 #Copyright Todd Deshane and Patrick F. Wilbur
 
-import sys
-LOGFILE = "/var/log/eventchat/eventchat.log"
+import sys,os
+from subprocess import Popen,STDOUT,PIPE
+eventchat_logfile = "/var/log/eventchat/eventchat.log"
+eventchat_errfile = "/var/log/eventchat/eventchat.err"
+policymanager_logfile = "/var/log/policymanager/policymanager.log"
+policymanager_errfile = "/var/log/policymanager/policymanager.err"
+osckar_interface_vmm_logfile = "/var/log/vmminterface/vmminterface.log"
+osckar_interface_vmm_errfile = "/var/log/vmminterface/vmminterface.err"
+osckar_interface_builder_logfile = "/var/log/builderinterface/builderinterface.log"
+osckar_interface_builder_errfile = "/var/log/builderinterface/builderinterface.err"
 PORT = sys.argv[1]
 
-os.system("su eventchat -c eventchat" + PORT + "2>&1 >" + LOGFILE + " &")
-os.system("su policymanager -c policymanager" + port + "2>&1 >" + LOGFILE + " &")
-os.system("su vmminterface -c vmminterface" + PORT + "2>&1 >" + LOGFILE + " &")
-os.system("su builderinterface -c builderinterface" + PORT + "2>&1 >" + LOGFILE + " &") 
+
+eventchat_command = 'su eventchat -c "eventchat ' + PORT + ' "' 
+eventchat_outfile = open(eventchat_logfile,"a")
+eventchat_errfile = open(eventchat_errfile,"a")
+eventchat_pid = Popen(eventchat_command,stdout=eventchat_outfile,stderr=eventchat_errfile,shell=True).pid
+os.system("sleep 1")
+policymanager_command = 'su policymanager -c "policymanager ' + PORT + ' "' 
+policymanager_outfile = open(policymanager_logfile,"a")
+policymanager_errfile = open(policymanager_errfile,"a")
+policymanager_pid = Popen(policymanager_command,stdout=policymanager_outfile,stderr=policymanager_errfile,shell=True).pid
+
+osckar_interface_vmm_command = 'su vmminterface -c "osckar-interface-vmm ' + PORT + ' "' 
+osckar_interface_vmm_outfile = open(osckar_interface_vmm_logfile,"a")
+osckar_interface_vmm_errfile = open(osckar_interface_vmm_errfile,"a")
+osckar_interface_vmm_pid = Popen(osckar_interface_vmm_command,stdout=osckar_interface_vmm_outfile,stderr=osckar_interface_vmm_errfile,shell=True).pid
+
+osckar_interface_builder_command = 'su builderinterface -c "osckar-interface-builder ' + PORT + ' "' 
+osckar_interface_builder_outfile = open(osckar_interface_builder_logfile,"a")
+osckar_interface_builder_errfile = open(osckar_interface_builder_errfile,"a")
+osckar_interface_builder_pid = Popen(osckar_interface_builder_command,stdout=osckar_interface_builder_outfile,stderr=osckar_interface_builder_errfile,shell=True).pid

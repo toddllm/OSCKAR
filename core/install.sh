@@ -33,14 +33,15 @@ sudo useradd policymanager -s /bin/sh
 sudo useradd vmminterface -s /bin/sh
 sudo useradd builderinterface -s /bin/sh
 sudo find . -name '*~' -exec rm {} \;
-sudo cp -r ./usr/sbin/* /usr/sbin/
-sudo cp -r ./usr/share/* /usr/share/
-sudo cp -r ./etc/* /etc/
-sudo cp -r ./var/lib/* /var/lib/
-sudo cp -r ./var/log/* /var/log/
+sudo cp -rp ./usr/sbin/* /usr/sbin/
+sudo cp -rp ./usr/share/* /usr/share/
+sudo cp -rp ./etc/* /etc/
+sudo cp -rp ./var/lib/* /var/lib/
+sudo cp -rp ./var/log/* /var/log/
 
 #access to contracts
 sudo chown -R policymanager /var/lib/policymanager
+sudo chown -R vmminterface /var/lib/osckar/vmminterface
 
 #access to log directories
 sudo chown -R eventchat /var/log/eventchat

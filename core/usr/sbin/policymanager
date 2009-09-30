@@ -1,4 +1,4 @@
-#!/usr/bin/python -Wall
+#!/usr/bin/python -u
 
 #PolicyManager.py
 

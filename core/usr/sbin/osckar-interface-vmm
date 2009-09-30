@@ -1,4 +1,4 @@
-#!/usr/bin/python -Wall
+#!/usr/bin/python -u
 
 import socket
 import os
@@ -7,11 +7,11 @@ from xml.dom.minidom import Node
 import random
 
 import sys
-sys.path.append('/usr/local/share/osckar/lib/')
+sys.path.append('/usr/share/osckar/lib/')
 import comm as c
 
 comm = c.Comm()
-path = "/etc/VMMInterface/contracts/libvirt/"
+path = "/var/lib/osckar/interfaces/vmm/libvirt/"
 if not os.path.isdir(path):
     os.makedirs(path)
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
