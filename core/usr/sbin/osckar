@@ -1,6 +1,6 @@
 #!/usr/bin/python -Wall
 
-#osckar
+#osckar - v.0.1
 #Copyright Todd Deshane and Patrick F. Wilbur
 
 import sys,os,signal
@@ -17,6 +17,10 @@ osckar_interface_vmm_pidfile = "/var/run/vmminterface/vmminterface.pid"
 osckar_interface_builder_logfile = "/var/log/builderinterface/builderinterface.log"
 osckar_interface_builder_errfile = "/var/log/builderinterface/builderinterface.err"
 osckar_interface_builder_pidfile = "/var/run/builderinterface/builderinterface.pid"
+
+if len(sys.argv) > 1 and sys.argv[1] == '--version':
+    print '0.1'
+    sys.exit(0)
 
 PORT = -1
 if len(sys.argv) < 3:
