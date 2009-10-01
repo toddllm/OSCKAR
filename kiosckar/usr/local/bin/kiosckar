@@ -4,7 +4,7 @@
 # Todd Deshane and Patrick F. Wilbur
 
 import os,sys
-sys.path.append('/usr/local/share/osckar/lib/')
+sys.path.append('/usr/share/osckar/lib/')
 import osckar as o
 
 osckar = o.Osckar()
