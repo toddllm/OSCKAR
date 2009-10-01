@@ -12,11 +12,12 @@ import comm as c
 import osckar as o
 osckar = o.Osckar()
 
-
+# output current version of EventChat
 if len(sys.argv) > 1 and sys.argv[1] == '--version':
     print '0.1'
     sys.exit(0)
 
+# output current protocol version
 if len(sys.argv) > 1 and sys.argv[1] == '--protocol-version':
     print '1'
     sys.exit(0)
