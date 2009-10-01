@@ -1,0 +1,14 @@
+<contract type="global_PolicyManager_policy">
+  <ruleset type="response">
+    <handle event="IMPORT_VMC">
+      <raise event="PolicyManager.import_contract" argument="$ARG" />
+    </handle>
+    <handle event="BUILD_VM">
+      <raise event="PolicyManager.send_subcontracts" argument="$ARG" />
+    </handle>
+    <handle event="START_VM">
+      <raise event="PolicyManager.send_subcontracts" argument="$ARG" />
+      <raise event="vmm.start_vm" argument="$ARG" />
+    </handle>
+  </ruleset>
+</contract>

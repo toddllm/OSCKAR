@@ -1,0 +1,93 @@
+#!/usr/bin/python -Wall
+
+# Appify Daemon
+# Copyright 2009 Todd Deshane and Patrick F. Wilbur
+#
+# Provisions and leases virtual machines to run particular applications,
+# and delegates application tasks to those virtual machines.
+
+
+# Appify Daemon and appify depend upon OSCKAR
+
+
+numDelegateVMs = 5
+
+
+import socket
+import os
+import xml.dom.minidom
+from xml.dom.minidom import Node
+#import random
+
+import sys
+sys.path.append('/usr/local/share/osckar/lib/')
+import comm as c
+
+comm = c.Comm()
+path = "/etc/VMMInterface/contracts/libvirt/"
+if not os.path.isdir(path):
+    os.makedirs(path)
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+sock.connect(('localhost', int(sys.argv[1])))
+print 'Appify Daemon'
+print 'connected on port',sys.argv[1]
+
+
+# Build delegate base image, if it does not yet exist
+print 'Appifyd: Building osckar_appify_delegate_base_image...'
+file = open("/etc/appify/appify_base_template.vmt")
+vmt = file.read()
+file.close()
+vm_name = 'osckar_appify_delegate_base_image'
+vmc = vmt.replace('$VM_NAME', vm_name)
+osckar.signal('IMPORT_VMC', vmc)
+osckar.signal('BUILD_VM', vm_name)
+while osckar.waitForEvent('VM_BUILD_SUCCEEDED') != vm_name:
+    pass  
+print '...Done!'
+
+
+# Create COW delegates from delegate base and start delegate VMs
+print 'Appifyd: Building and starting delegate VMs...'
+DelegateVMBusy = {} # Keep track of which delegate VMs are in use
+for i in range(1,numDelegateVMs):
+    DelegateVMBusy[i] = 0 # Delegate VM is not yet busy since just created
+    file = open("/etc/appify/appify_virtualappliance_template.vmt")
+    vmt = file.read()
+    file.close()
+    vm_name = 'osckar_appify_delegate_' + i
+    vmc = vmt.replace('$VM_NAME', vm_name)
+    osckar.signal('IMPORT_VMC', vmc)
+    osckar.signal('START_VM', vm_name)
+print '...Done!'
+
+
+# Bind to appropriate local appify events
+print 'Appifyd: Registering to handle appify.run event...'
+sock.send('regevt' + comm.makeChunk('appify.run'))
+print '...Done!'
+
+
+def nextAvailableVM():
+    for i in range(1,numDelegateVMs):
+        if DelegateVMBusy[i] = 0:
+            return i
+    return 0
+
+
+# Handle incoming event signals
+while 1:
+    messageType = sock.recv(6)
+    if messageType == 'signal':
+        eventName = comm.readChunk(sock)
+        eventArgs = comm.readChunk(sock)        
+        if eventName == 'appify.run':
+            print "Appifyd: Delegating VM for", eventArgs
+            vmNum = nextAvailableVM()
+            if vmNum > 0:
+                sock.send('signal' + comm.makeChunk('APPIFY_RUN_GOAHEAD') + 
+                          comm.makeChunk(eventArgs))
+            else:
+                sock.send('signal' + comm.makeChunk('APPIFY_NO_FREE_DELEGATES') + 
+                          comm.makeChunk(eventArgs))

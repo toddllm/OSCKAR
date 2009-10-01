@@ -1,0 +1,8 @@
+To install:
+
+tar xf OSCKARcore-dev-0.1-alpha.tar
+cd OSCKARcore-dev-0.1-alpha/
+./install.sh
+
+To run:
+osckar-core-debug 5000 (or pick your favorite port number)

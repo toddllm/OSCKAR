@@ -1,0 +1,24 @@
+--- /usr/share/pyshared/VMBuilder/plugins/ubuntu/dapper.py	2008-12-16 15:29:50 +0000
++++ /usr/share/pyshared/VMBuilder/plugins/ubuntu/dapper.py	2009-04-06 05:01:36 +0000
+@@ -178,7 +177,7 @@
+     def mangle_grub_menu_lst(self):
+         bootdev = disk.bootpart(self.vm.disks)
+         run_cmd('sed', '-ie', 's/^# kopt=root=\([^ ]*\)\(.*\)/# kopt=root=\/dev\/hd%s%d\\2/g' % (bootdev.disk.devletters(), bootdev.get_index()+1), '%s/boot/grub/menu.lst' % self.destdir)
+-        run_cmd('sed', '-ie', 's/^# groot.*/# groot %s/g' % bootdev.get_grub_id(), '%s/boot/grub/menu.lst' % self.destdir)
++        run_cmd('sed', '-ie', 's/^# groot.*/# groot=%s/g' % bootdev.get_grub_id(), '%s/boot/grub/menu.lst' % self.destdir)
+         run_cmd('sed', '-ie', '/^# kopt_2_6/ d', '%s/boot/grub/menu.lst' % self.destdir)
+ 
+     def install_sources_list(self, final=False):
+
+--- /usr/share/pyshared/VMBuilder/plugins/ubuntu/edgy.py	2008-12-04 16:28:48 +0000
++++ /usr/share/pyshared/VMBuilder/plugins/ubuntu/edgy.py	2009-04-06 05:01:36 +0000
+@@ -33,7 +33,7 @@
+     def mangle_grub_menu_lst(self):
+         bootdev = disk.bootpart(self.vm.disks)
+         run_cmd('sed', '-ie', 's/^# kopt=root=\([^ ]*\)\(.*\)/# kopt=root=UUID=%s\\2/g' % bootdev.fs.uuid, '%s/boot/grub/menu.lst' % self.destdir)
+-        run_cmd('sed', '-ie', 's/^# groot.*/# groot %s/g' % bootdev.get_grub_id(), '%s/boot/grub/menu.lst' % self.destdir)
++        run_cmd('sed', '-ie', 's/^# groot.*/# groot=%s/g' % bootdev.get_grub_id(), '%s/boot/grub/menu.lst' % self.destdir)
+         run_cmd('sed', '-ie', '/^# kopt_2_6/ d', '%s/boot/grub/menu.lst' % self.destdir)
+ 
+     def fstab(self):
+

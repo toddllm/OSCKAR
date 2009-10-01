@@ -1,0 +1,20 @@
+<contract type="global_osckar_policy">
+  <ruleset type="reaction">
+    <handle event="IMPORT_VMC">
+      <saveFile basePath="/etc/osckar/..." />
+      <raise event="log" argument="The VM $ARG has just been started" />
+    </handle>
+    <handle event="START_VM">
+      <sendSubContracts />
+      <raise event="log" argument="The VM $ARG has just been started" />
+      <raise event="vmm.start_vm" argument="$ARG" />
+    </handle>
+    <handle event="FSVM:PROHIBITED_DELETION_ATTEMPTED">
+      <raise event="log" argument="The VM $ARG just tried to steal" />
+      <raise event="vmm.destroy_vm" argument="$ARG" />
+      <raise event="ui.alert" argument="An application has been hijacked. We are rebuilding now." />
+      <raise event="vmm.rollback" argument="$ARG" />
+      <raise event="vmm.start_vm" argument="$ARG" />
+    </handle>
+  </ruleset>
+</contract>

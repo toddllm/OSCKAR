@@ -1,0 +1,60 @@
+<contract id="$VM_NAME">
+  <ruleset type="builder">
+
+    <os type="linux" flavor="ubuntu" version="9.04" />
+    
+    <disk type="disk" size="10240" sparse="true" format="qcow2">$VM_NAME.qcow2</disk>
+    
+    <partitions>
+      <partition type="primary" filesystem="ext3" mountpoint="/" size="9216" bootable="true">1</partition>
+      <partition type="extended">2</partition>
+      <partition type="logical" filesystem="swap" size="1024">5</partition>
+    </partitions>
+    
+    <users>
+      <user logindisabled="true">root</user>
+      <user password="ubuntu" groups="ubuntu,admin">ubuntu</user>
+    </users>
+    
+    <packages>
+      <package name="openssh-server" action="add" />
+      <package name="sl" action="add" />    
+    </packages>
+
+    <installmirror>$INSTALL_MIRROR</installmirror>
+    
+  </ruleset>
+  <ruleset type="vmm-libvirt">
+    <domain type='kvm'>	
+      <name>$VM_NAME</name>
+      <memory>131072</memory>
+      <currentMemory>131072</currentMemory>
+      <vcpu>1</vcpu>
+      <os>
+	<type arch='x86_64' machine='pc'>hvm</type>
+	<boot dev='hd'/>
+      </os>
+      <features>
+	<acpi/>
+      </features>
+      <clock offset='utc'/>
+      <on_poweroff>destroy</on_poweroff>
+      <on_reboot>restart</on_reboot>
+      <on_crash>destroy</on_crash>
+      <devices>
+	<emulator>/usr/bin/kvm</emulator>
+	<disk type='file' device='disk'>
+	  <source file='/var/lib/osckar/images/$VM_NAME/$VM_NAME.qcow2'/>
+	  <target dev='hda' bus='ide'/>
+	</disk>
+	<interface type='network'>
+	  <mac address='52:54:00:38:84:a7'/>
+	  <source network='default'/>
+	  <model type='virtio'/>
+	</interface>
+	<input type='mouse' bus='ps2'/>
+	<graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1'/>
+      </devices>
+    </domain>
+  </ruleset>
+</contract>

@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+# Appify - Run user apps in separate VMs
+#   (application segregation through OSCKAR)
+#
+# Copyright 2009 Todd Deshane and Patrick F. Wilbur
+
+import os,sys
+sys.path.append('/usr/share/osckar/lib/')
+import osckar as o
+
+osckar = o.Osckar()
+
+if len(sys.argv) > 2:
+    port = sys.argv[1]
+    appliance = sys.argv[2]
+if len(sys.argv) > 1:
+    port = 5000
+    appliance = sys.argv[1]
+else:
+    print "Usage:"
+    print sys.argv[0] + " application"
+    print sys.argv[0] + " OSCKAR_Management_Port application"
+    sys.exit()
+
+osckar.connect('localhost',port)
+osckar.registerEvent('APPIFY_RUN_GOAHEAD')
+osckar.registerEvent('APPIFY_NO_FREE_DELEGATES')
+
+# TODO: Finish this command

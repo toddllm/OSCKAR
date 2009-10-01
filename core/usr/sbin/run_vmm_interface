@@ -1,0 +1,6 @@
+#!/bin/bash
+
+su vmminterface -c "osckar-interface-vmm $1" &
+sleep 1
+vmminterface_pid=`pidof -xs osckar-interface-vmm`
+su vmminterface -c "echo ${vmminterface_pid} > /var/run/vmminterface/vmminterface.pid"

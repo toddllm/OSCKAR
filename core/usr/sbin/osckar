@@ -1,0 +1,186 @@
+#!/usr/bin/python -Wall
+
+#osckar
+#Copyright Todd Deshane and Patrick F. Wilbur
+
+import sys,os,signal
+from subprocess import Popen,STDOUT,PIPE
+eventchat_logfile = "/var/log/eventchat/eventchat.log"
+eventchat_errfile = "/var/log/eventchat/eventchat.err"
+eventchat_pidfile = "/var/run/eventchat/eventchat.pid"
+policymanager_logfile = "/var/log/policymanager/policymanager.log"
+policymanager_errfile = "/var/log/policymanager/policymanager.err"
+policymanager_pidfile = "/var/run/policymanager/policymanager.pid"
+osckar_interface_vmm_logfile = "/var/log/vmminterface/vmminterface.log"
+osckar_interface_vmm_errfile = "/var/log/vmminterface/vmminterface.err"
+osckar_interface_vmm_pidfile = "/var/run/vmminterface/vmminterface.pid"
+osckar_interface_builder_logfile = "/var/log/builderinterface/builderinterface.log"
+osckar_interface_builder_errfile = "/var/log/builderinterface/builderinterface.err"
+osckar_interface_builder_pidfile = "/var/run/builderinterface/builderinterface.pid"
+
+PORT = -1
+if len(sys.argv) < 3:
+    PORT = str(5000)
+else:
+    PORT = sys.argv[2]
+
+
+def stop():
+    global eventchat_pidfile
+    global policymanager_pidfile
+    global osckar_interface_vmm_pidfile
+    global osckar_interface_builder_pidfile
+    print 'Stopping OSCKAR services...'
+
+    #eventchat
+    ec_file = open(eventchat_pidfile,"r")
+    ec_pid = ec_file.read()
+    ec_pid = ec_pid.rstrip()
+    if not os.path.exists("/proc/" + ec_pid):
+        sys.stdout.write('eventchat not running')
+        os.remove(eventchat_pidfile)
+        print ""
+    else:
+        os.kill(int(ec_pid),signal.SIGTERM)
+        if not os.path.exists("/proc/" + str(ec_pid)):
+            sys.stdout.write('eventchat stopped')
+            print ""
+            os.remove(eventchat_pidfile)
+
+    #policymanger
+    pm_file = open(policymanager_pidfile,"r")
+    pm_pid = pm_file.read()
+    pm_pid = pm_pid.rstrip()
+    if not os.path.exists("/proc/" + pm_pid):
+        sys.stdout.write('policymanager not running')
+        os.remove(policymanger_pidfile)
+        print ""
+    else:
+        os.kill(int(pm_pid),signal.SIGTERM)
+        if not os.path.exists("/proc/" + str(pm_pid)):
+            sys.stdout.write('policymanger stopped')
+            print ""
+            os.remove(policymanager_pidfile)
+    
+    #vmm
+    vm_file = open(osckar_interface_vmm_pidfile,"r")
+    vm_pid = vm_file.read()
+    vm_pid = vm_pid.rstrip()
+    if not os.path.exists("/proc/" + vm_pid):
+        sys.stdout.write('osckar-interface-vmm not running')
+        os.remove(osckar_interface_vmm_pidfile)
+        print ""
+    else:
+        os.kill(int(vm_pid),signal.SIGTERM)
+        if not os.path.exists("/proc/" + vm_pid):
+            sys.stdout.write('osckar-interface-vmm stopped')
+            print ""
+            os.remove(osckar_interface_vmm_pidfile)
+
+
+    #builder
+    bd_file = open(osckar_interface_builder_pidfile,"r")
+    bd_pid = bd_file.read()
+    bd_file = open(osckar_interface_builder_pidfile,"r")
+    bd_pid = bd_file.read()
+    bd_pid = bd_pid.rstrip()
+    if not os.path.exists("/proc/" + bd_pid):
+        sys.stdout.write('osckar-interface-builder not running')
+        os.remove(osckar_interface_bd_pidfile)
+        print ""
+    else:
+        os.kill(int(bd_pid),signal.SIGTERM)
+        if not os.path.exists("/proc/" + vm_pid):
+            sys.stdout.write('osckar-interface-builder stopped')
+            print ""
+            os.remove(osckar_interface_builder_pidfile)
+
+def status():
+    print "fixme"
+
+def start():
+    global eventchat_errfile
+    global eventchat_logfile
+    global eventchat_pidfile
+    global policymanager_logfile
+    global policymanager_errfile
+    global policymanager_pidfile
+    global osckar_interface_vmm_logfile
+    global osckar_interface_vmm_errfile
+    global osckar_interface_vmm_pidfile
+    global osckar_interface_builder_logfile
+    global osckar_interface_builder_errfile
+    global osckar_interface_builder_pidfile
+
+    global PORT
+    print "Port: " + PORT
+    print "Starting OSCKAR services on port: " + PORT
+
+    sys.stdout.write('Starting eventchat...')
+
+    eventchat_command = ['run_eventchat',PORT]
+    eventchat_outfile = open(eventchat_logfile,"a")
+    eventchat_errfile = open(eventchat_errfile,"a")
+    eventchat_pid = Popen(eventchat_command,stdout=eventchat_outfile,stderr=eventchat_errfile,shell=False).pid
+    os.system("sleep 1")
+    if os.path.exists("/proc/" + str(eventchat_pid)):
+        sys.stdout.write('[OK]')
+        print ""
+    else:
+        sys.stdout.write('failed')
+        sys.exit(1)
+
+
+    sys.stdout.write('Starting policymanager...')
+    policymanager_command = ['run_policymanager',PORT]
+    policymanager_outfile = open(policymanager_logfile,"a")
+    policymanager_errfile = open(policymanager_errfile,"a")
+    policymanager_pid = Popen(policymanager_command,stdout=policymanager_outfile,stderr=policymanager_errfile,shell=False).pid
+    if os.path.exists("/proc/" + str(policymanager_pid)):
+        sys.stdout.write('[OK]')
+        print ""
+    else:
+        sys.stdout.write('failed')
+        sys.exit(1)
+
+    sys.stdout.write('Starting osckar-interface-vmm...')
+    osckar_interface_vmm_command = ['run_vmm_interface',PORT]
+    osckar_interface_vmm_outfile = open(osckar_interface_vmm_logfile,"a")
+    osckar_interface_vmm_errfile = open(osckar_interface_vmm_errfile,"a")
+    osckar_interface_vmm_pid = Popen(osckar_interface_vmm_command,stdout=osckar_interface_vmm_outfile,stderr=osckar_interface_vmm_errfile,shell=False).pid
+    if os.path.exists("/proc/" + str(osckar_interface_vmm_pid)):
+        sys.stdout.write('[OK]')
+        print ""
+    else:
+        sys.stdout.write('failed')
+        sys.exit(1)
+
+
+    sys.stdout.write('Starting osckar-interface-builder...')
+    osckar_interface_builder_command = ['run_builder_interface',PORT]
+    osckar_interface_builder_outfile = open(osckar_interface_builder_logfile,"a")
+    osckar_interface_builder_errfile = open(osckar_interface_builder_errfile,"a")
+    osckar_interface_builder_pid = Popen(osckar_interface_builder_command,stdout=osckar_interface_builder_outfile,stderr=osckar_interface_builder_errfile,shell=False).pid
+    if os.path.exists("/proc/" + str(osckar_interface_builder_pid)):
+        sys.stdout.write('[OK]')
+        print ""
+    else:
+        sys.stdouot.write('failed')
+        sys.exit(1)
+
+def usage():
+    print "Usage: " + os.path.basename(sys.argv[0]) + " <start|stop|status> [port]"
+    exit(1)
+
+if sys.argv[1] == "start":
+    start()
+elif sys.argv[1] == "stop":
+    stop()
+elif sys.argv[1] == "status":
+    status()
+else:
+    usage()
+
+
+
+
