@@ -64,18 +64,8 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
     # actions required.
     def setup(self):
         accessLog(['CONNECT',self.client_address, 'connected'])
-        challenge = generateChallenge()
-        try:
-            # lock client challenges map and create new challenge
-            cCHlock.acquire()
-            clientChallenges[self.request] = challenge
-            cCHlock.release()
-        finally:
-            # unlock client challenges map
-            # handled in the finally to be more graceful
-            cCHlock.release()
         # greet client, then riddle client with the challenge
-        self.request.send('helloo' + comm.makeChunk(challenge))
+        self.request.send('helloo' + comm.makeChunk(self.issueNewChallenge(self.request)))
 
     # The handle function does all the work required to service a request.
     # Several instance attributes are available to it; the request is 
@@ -136,6 +126,8 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
                                    'provided invalid authentication response' +
                                    ' while attempting to perform procedure',
                                    procedure])
+
+                self.riddleChallenge(self.issueNewChallenge(self.request))
             
             #TODO: add a DEBUG mode to allow raising various events
             #add except cases for debugging, remove for production
@@ -271,6 +263,31 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
             return clientLoginNames[reqID]
         else:
             return ''
+
+    # get the last challenge for a client
+    def getChallenge(reqID):
+        if reqID in clientChallenges:
+            return clientChallenges[reqID]
+        else:
+            return ''
+
+    # generate a new challenge for client
+    def issueNewChallenge(reqID):
+        challenge = osckar.generateChallenge()
+        try:
+            # lock client challenges map and create new challenge
+            cCHlock.acquire()
+            clientChallenges[self.request] = challenge
+            cCHlock.release()
+        finally:
+            # unlock client challenges map
+            # handled in the finally to be more graceful
+            cCHlock.release()
+        return challenge
+
+    # update client with new challenge
+    def riddleChallenge(reqID,challenge):
+        self.request.send('chllng' + comm.makeChunk(challenge))
 
 #end Class ECRequestHandler
 
