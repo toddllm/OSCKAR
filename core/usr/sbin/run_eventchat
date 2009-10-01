@@ -5,7 +5,11 @@ then
     su eventchat -c "eventchat  $2" 
 else
     su eventchat -c "eventchat  $1" &
-    sleep 1
+    sleep 5
     eventchat_pid=`pidof -xs eventchat`
-    su eventchat -c "echo ${eventchat_pid} > /var/run/eventchat/eventchat.pid"
+    pidof -xs eventchat
+    if [ $? -eq 0 ]
+    then
+    	su eventchat -c "echo ${eventchat_pid} > /var/run/eventchat/eventchat.pid"
+    fi
 fi

@@ -7,5 +7,9 @@ else
     su policymanager -c "policymanager  $1" &
     sleep 1
     policymanager_pid=`pidof -xs policymanager`
-    su policymanager -c "echo ${policymanager_pid} > /var/run/policymanager/policymanager.pid"
+    pidof -xs policymanager
+    if [ $? -eq 0 ]
+    then
+	su policymanager -c "echo ${policymanager_pid} > /var/run/policymanager/policymanager.pid"
+    fi
 fi

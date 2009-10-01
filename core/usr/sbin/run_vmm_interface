@@ -2,10 +2,14 @@
 
 if [ $1 == "-f" ] #run in foreground
 then
-        su vmminterface -c "osckar-interface-vmm $2"
+    su vmminterface -c "osckar-interface-vmm $2"
 else
     su vmminterface -c "osckar-interface-vmm $1" &
     sleep 1
     vmminterface_pid=`pidof -xs osckar-interface-vmm`
-    su vmminterface -c "echo ${vmminterface_pid} > /var/run/osckar/vmminterface/vmminterface.pid"
+    pidof -xs osckar-interface-vmm
+    if [ $? -eq 0 ]
+    then
+	su vmminterface -c "echo ${vmminterface_pid} > /var/run/osckar/vmminterface/vmminterface.pid"
+    fi
 fi

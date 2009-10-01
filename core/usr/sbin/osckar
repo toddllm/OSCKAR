@@ -4,7 +4,7 @@
 #Copyright Todd Deshane and Patrick F. Wilbur
 
 import sys,os,signal
-from subprocess import Popen,STDOUT,PIPE
+from subprocess import Popen,STDOUT,PIPE,call
 eventchat_logfile = "/var/log/eventchat/eventchat.log"
 eventchat_errfile = "/var/log/eventchat/eventchat.err"
 eventchat_pidfile = "/var/run/eventchat/eventchat.pid"
@@ -28,6 +28,11 @@ if len(sys.argv) < 3:
 else:
     PORT = sys.argv[2]
 
+
+def restart():
+    stop()
+    os.system("sleep 5")
+    start()
 
 def stop():
     global eventchat_pidfile
@@ -213,11 +218,13 @@ def start():
     eventchat_errfile = open(eventchat_errfile,"a")
     eventchat_pid = Popen(eventchat_command,stdout=eventchat_outfile,stderr=eventchat_errfile,shell=False).pid
     os.system("sleep 1")
-    if os.path.exists("/proc/" + str(eventchat_pid)):
+    retcode = os.system("pidof -xs eventchat")
+    if retcode == 0:
         sys.stdout.write('[OK]')
         print ""
     else:
         sys.stdout.write('failed')
+        print ""
         sys.exit(1)
 
 
@@ -259,7 +266,7 @@ def start():
         sys.exit(1)
 
 def usage():
-    print "Usage: " + os.path.basename(sys.argv[0]) + " <start|stop|status> [port]"
+    print "Usage: " + os.path.basename(sys.argv[0]) + " <start|stop|status|restart> [port]"
     exit(1)
 
 if sys.argv[1] == "start":
@@ -268,6 +275,8 @@ elif sys.argv[1] == "stop":
     stop()
 elif sys.argv[1] == "status":
     status()
+elif sys.argv[1] == "restart":
+    restart()
 else:
     usage()
 

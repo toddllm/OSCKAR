@@ -6,5 +6,9 @@ else
     su builderinterface -c "osckar-interface-builder $1" &
     sleep 1
     builder_pid=`pidof -xs osckar-interface-builder`
-    su builderinterface -c "echo ${builder_pid} > /var/run/osckar/builderinterface/builderinterface.pid"
+    pidof -xs osckar-interface-builder
+    if [ $? -eq 0 ]
+    then
+	su builderinterface -c "echo ${builder_pid} > /var/run/osckar/builderinterface/builderinterface.pid"
+    fi
 fi
