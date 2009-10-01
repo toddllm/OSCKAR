@@ -1,6 +1,11 @@
 #!/bin/bash
 
-su policymanager -c "policymanager  $1" &
-sleep 1
-policymanager_pid=`pidof -xs policymanager`
-su policymanager -c "echo ${policymanager_pid} > /var/run/policymanager/policymanager.pid"
+if [ $1 == "-f" ] #run in foreground
+then
+    su policymanager -c "policymanager  $2"
+else
+    su policymanager -c "policymanager  $1" &
+    sleep 1
+    policymanager_pid=`pidof -xs policymanager`
+    su policymanager -c "echo ${policymanager_pid} > /var/run/policymanager/policymanager.pid"
+fi

@@ -1,6 +1,10 @@
 #!/bin/bash
-
-su builderinterface -c "osckar-interface-builder $1" &
-sleep 1
-builder_pid=`pidof -xs osckar-interface-builder`
-su builderinterface -c "echo ${builder_pid} > /var/run/osckar/builderinterface/builderinterface.pid"
+if [ $1 == "-f" ] #run in foreground
+then
+    su builderinterface -c "osckar-interface-builder $2"
+else
+    su builderinterface -c "osckar-interface-builder $1" &
+    sleep 1
+    builder_pid=`pidof -xs osckar-interface-builder`
+    su builderinterface -c "echo ${builder_pid} > /var/run/osckar/builderinterface/builderinterface.pid"
+fi

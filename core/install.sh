@@ -59,7 +59,7 @@ sudo cp -rp ./dist/usr/share/* /usr/share/
 sudo cp -rp ./dist/etc/* /etc/
 sudo cp -rp ./dist/var/lib/* /var/lib/
 sudo cp -rp ./dist/var/log/* /var/log/
-sudo cp -rp ./dist/var/log/* /var/run/
+sudo cp -rp ./dist/var/run/* /var/run/
 
 #access to contracts
 sudo chown -R policymanager /var/lib/policymanager
