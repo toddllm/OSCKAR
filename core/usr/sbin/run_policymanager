@@ -1,0 +1,6 @@
+#!/bin/bash
+
+su policymanager -c "policymanager  $1" &
+sleep 1
+policymanager_pid=`pidof -xs policymanager`
+su policymanager -c "echo ${policymanager_pid} > /var/run/policymanager/policymanager.pid"

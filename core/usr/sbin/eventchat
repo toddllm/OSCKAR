@@ -6,6 +6,16 @@ import sys
 sys.path.append('/usr/share/osckar/lib/')
 import comm as c
 
+
+if len(sys.argv) > 1 and sys.argv[1] == '--version':
+    print '0.1'
+    sys.exit(0)
+
+if len(sys.argv) > 1 and sys.argv[1] == '--protocol-version':
+    print '1'
+    sys.exit(0)
+
+
 #Global variables
 eventHandlerSockets = {}
 eHSlock = threading.Lock()

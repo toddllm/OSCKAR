@@ -71,7 +71,7 @@ sock.send('regevt' + comm.makeChunk('PolicyManager.import_contract'))
 sock.send('regevt' + comm.makeChunk('PolicyManager.send_subcontracts'))
 
 
-globalContractFile = path + 'global_policy.xml'
+globalContractFile = config_path + 'global_policy.xml'
 sendSubContracts(globalContractFile,"",".global_init")
 
 
