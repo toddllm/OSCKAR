@@ -3,4 +3,4 @@
 su builderinterface -c "osckar-interface-builder $1" &
 sleep 1
 builder_pid=`pidof -xs osckar-interface-builder`
-su builder -c "echo ${builderinterface_pid} > /var/run/builderinterface/builderinterface.pid"
+su builderinterface -c "echo ${builder_pid} > /var/run/builderinterface/builderinterface.pid"

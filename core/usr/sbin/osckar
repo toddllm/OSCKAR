@@ -37,67 +37,73 @@ def stop():
     print 'Stopping OSCKAR services...'
 
     #eventchat
-    ec_file = open(eventchat_pidfile,"r")
-    ec_pid = ec_file.read()
-    ec_pid = ec_pid.rstrip()
-    if not os.path.exists("/proc/" + ec_pid):
+    if(os.path.exists(eventchat_pidfile)):
         sys.stdout.write('eventchat not running')
-        os.remove(eventchat_pidfile)
         print ""
-    else:
-        os.kill(int(ec_pid),signal.SIGTERM)
-        if not os.path.exists("/proc/" + str(ec_pid)):
-            sys.stdout.write('eventchat stopped')
-            print ""
+        ec_file = open(eventchat_pidfile,"r")
+        ec_pid = ec_file.read()
+        ec_pid = ec_pid.rstrip()
+        if not os.path.exists("/proc/" + ec_pid):
+            sys.stdout.write('eventchat not running')
             os.remove(eventchat_pidfile)
-
-    #policymanger
-    pm_file = open(policymanager_pidfile,"r")
-    pm_pid = pm_file.read()
-    pm_pid = pm_pid.rstrip()
-    if not os.path.exists("/proc/" + pm_pid):
-        sys.stdout.write('policymanager not running')
-        os.remove(policymanger_pidfile)
-        print ""
-    else:
-        os.kill(int(pm_pid),signal.SIGTERM)
-        if not os.path.exists("/proc/" + str(pm_pid)):
-            sys.stdout.write('policymanger stopped')
             print ""
+        else:
+            os.kill(int(ec_pid),signal.SIGTERM)
+            if not os.path.exists("/proc/" + str(ec_pid)):
+                sys.stdout.write('eventchat stopped')
+                print ""
+                os.remove(eventchat_pidfile)
+
+    #policymanager
+    if(os.path.exists(policymanager_pidfile)):
+        pm_file = open(policymanager_pidfile,"r")
+        pm_pid = pm_file.read()
+        pm_pid = pm_pid.rstrip()
+        if not os.path.exists("/proc/" + pm_pid):
+            sys.stdout.write('policymanager not running')
             os.remove(policymanager_pidfile)
+            print ""
+        else:
+            os.kill(int(pm_pid),signal.SIGTERM)
+            if not os.path.exists("/proc/" + str(pm_pid)):
+                sys.stdout.write('policymanager stopped')
+                print ""
+                os.remove(policymanager_pidfile)
     
     #vmm
-    vm_file = open(osckar_interface_vmm_pidfile,"r")
-    vm_pid = vm_file.read()
-    vm_pid = vm_pid.rstrip()
-    if not os.path.exists("/proc/" + vm_pid):
-        sys.stdout.write('osckar-interface-vmm not running')
-        os.remove(osckar_interface_vmm_pidfile)
-        print ""
-    else:
-        os.kill(int(vm_pid),signal.SIGTERM)
+    if(os.path.exists(osckar_interface_vmm_pidfile)):
+        vm_file = open(osckar_interface_vmm_pidfile,"r")
+        vm_pid = vm_file.read()
+        vm_pid = vm_pid.rstrip()
         if not os.path.exists("/proc/" + vm_pid):
-            sys.stdout.write('osckar-interface-vmm stopped')
-            print ""
+            sys.stdout.write('osckar-interface-vmm not running')
             os.remove(osckar_interface_vmm_pidfile)
+            print ""
+        else:
+            os.kill(int(vm_pid),signal.SIGTERM)
+            if not os.path.exists("/proc/" + vm_pid):
+                sys.stdout.write('osckar-interface-vmm stopped')
+                print ""
+                os.remove(osckar_interface_vmm_pidfile)
 
 
     #builder
-    bd_file = open(osckar_interface_builder_pidfile,"r")
-    bd_pid = bd_file.read()
-    bd_file = open(osckar_interface_builder_pidfile,"r")
-    bd_pid = bd_file.read()
-    bd_pid = bd_pid.rstrip()
-    if not os.path.exists("/proc/" + bd_pid):
-        sys.stdout.write('osckar-interface-builder not running')
-        os.remove(osckar_interface_bd_pidfile)
-        print ""
-    else:
-        os.kill(int(bd_pid),signal.SIGTERM)
-        if not os.path.exists("/proc/" + vm_pid):
-            sys.stdout.write('osckar-interface-builder stopped')
+    if(os.path.exists(osckar_interface_builder_pidfile)):
+        bd_file = open(osckar_interface_builder_pidfile,"r")
+        bd_pid = bd_file.read()
+        bd_file = open(osckar_interface_builder_pidfile,"r")
+        bd_pid = bd_file.read()
+        bd_pid = bd_pid.rstrip()
+        if not os.path.exists("/proc/" + bd_pid):
+            sys.stdout.write('osckar-interface-builder not running')
+            os.remove(osckar_interface_bd_pidfile)
             print ""
-            os.remove(osckar_interface_builder_pidfile)
+        else:
+            os.kill(int(bd_pid),signal.SIGTERM)
+            if not os.path.exists("/proc/" + vm_pid):
+                sys.stdout.write('osckar-interface-builder stopped')
+                print ""
+                os.remove(osckar_interface_builder_pidfile)
 
 def status():
     print "fixme"
