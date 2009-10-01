@@ -11,9 +11,10 @@ sys.path.append('/usr/share/osckar/lib/')
 import comm as c
 
 comm = c.Comm()
-path = "/var/lib/osckar/interfaces/vmm/libvirt/"
-if not os.path.isdir(path):
-    os.makedirs(path)
+libvirt_path = "/var/lib/osckar/interfaces/vmm/libvirt/"
+images_path = "/var/lib/osckar/interfaces/vmm/images/"
+if not os.path.isdir(libvirt_path):
+    os.makedirs(libvirt_path)
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 sock.connect(('localhost', int(sys.argv[1])))
@@ -34,7 +35,7 @@ while 1:
         eventArgs = comm.readChunk(sock)        
         if eventName == 'vmm.start_vm':
             print "Starting VM", eventArgs
-            os.system("virsh define " + path + eventArgs + '.xml')
+            os.system("virsh define " + libvirt_path + eventArgs + '.xml')
             returnCode = os.system("virsh start " + eventArgs)
             if returnCode == 0:
                 # send an VM_START_SUCCEEDED vmname event
@@ -65,7 +66,7 @@ while 1:
             # TODO: should grab ruleset id here instead
             vm_name = doc.getElementsByTagName("name")[0].childNodes[0].nodeValue
 
-            outFile = open(path + vm_name + '.xml', 'w')
+            outFile = open(libvirt_path + vm_name + '.xml', 'w')
             #eventArgs is content of libvirt domain configuration file
             outFile.write(libvirtFile)
             outFile.close()           
@@ -75,7 +76,7 @@ while 1:
 
             # TODO: should grab ruleset id here instead
             vm_name = doc.getElementsByTagName("name")[0].childNodes[0].nodeValue
-            outFile = open(path + vm_name + '.xml', 'w')
+            outFile = open(libvirt_path + vm_name + '.xml', 'w')
 
             #process contract
             name = doc.getElementsByTagName("name")[0].childNodes[0].data
@@ -97,7 +98,7 @@ while 1:
                     while cowtempfile == '' or os.path.exists(cowtempfile):
                         cowtempfile = cowdisk.childNodes[0].data + '-' + str(random.randrange(0,32000)) + ".qcow2"
                     #
-                    cowpath = "/home/csguest/Desktop/OSCKARcore/interfaces/"
+                    cowpath = images_path
                     print "DEBUG cmd: " + "qemu-img create -f qcow2 -b " + cowdisk.getAttribute('cowbase') + " " + cowtempfile
                     os.system("qemu-img create -f qcow2 -b " + cowdisk.getAttribute('cowbase') + " " + cowtempfile) 
                     disk_paths.append(cowpath + cowtempfile)
