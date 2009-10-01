@@ -74,7 +74,7 @@ sudo chown -R builderinterface /var/log/builderinterface
 #access to (/var/run) pid directories
 sudo chown -R eventchat /var/run/eventchat
 sudo chown -R policymanager /var/run/policymanager
-sudo chown -R vmminterface /var/run/vmminterface
-sudo chown -R builderinterface /var/run/builderinterface
+sudo chown -R vmminterface /var/run/osckar/vmminterface
+sudo chown -R builderinterface /var/run/osckar/builderinterface
 echo 'Done'
 

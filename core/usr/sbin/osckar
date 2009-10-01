@@ -13,10 +13,10 @@ policymanager_errfile = "/var/log/policymanager/policymanager.err"
 policymanager_pidfile = "/var/run/policymanager/policymanager.pid"
 osckar_interface_vmm_logfile = "/var/log/vmminterface/vmminterface.log"
 osckar_interface_vmm_errfile = "/var/log/vmminterface/vmminterface.err"
-osckar_interface_vmm_pidfile = "/var/run/vmminterface/vmminterface.pid"
+osckar_interface_vmm_pidfile = "/var/run/osckar/vmminterface/vmminterface.pid"
 osckar_interface_builder_logfile = "/var/log/builderinterface/builderinterface.log"
 osckar_interface_builder_errfile = "/var/log/builderinterface/builderinterface.err"
-osckar_interface_builder_pidfile = "/var/run/builderinterface/builderinterface.pid"
+osckar_interface_builder_pidfile = "/var/run/osckar/builderinterface/builderinterface.pid"
 
 if len(sys.argv) > 1 and sys.argv[1] == '--version':
     print '0.1'
