@@ -1,2 +1,16 @@
 
+PHP Version of KIOSKCAR
 
+
+
+
+Lower Priority Items (1.0 release?)
+Graceful closing of interfaces and services when eventchat crashes
+Eventchat recovery of still running interfaces and services
+  *have them finish whatever they were doing then exit (and, a user then can
+issue an osckar start/restart and they will start up again).  It would be
+nice for them to try to reestablish a connection 4 or 5 times before exiting
+though.  Then, we could have eventchat call an eventchat-server process,
+which is the actual eventchat, and it could try restarting it if it crashes
+(and keep restarting as long as it doesn't crash upon initial startup more
+ than a few times), in an effort for high-availability.
