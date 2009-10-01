@@ -127,7 +127,66 @@ def stop():
             os.remove(osckar_interface_builder_pidfile)
 
 def status():
-    print "fixme"
+
+    if(not os.path.exists(eventchat_pidfile)):
+        sys.stdout.write('eventchat not running (no pid file)')
+        print ""
+    else: #os.path.exists(eventchat_pidfile)):
+        ec_file = open(eventchat_pidfile,"r")
+        ec_pid = ec_file.read()
+        ec_pid = ec_pid.rstrip()
+        if os.path.exists("/proc/" + ec_pid):
+            sys.stdout.write('eventchat running')
+            print ""
+        else:
+            sys.stdout.write('eventchat not running')
+            os.remove(eventchat_pidfile)
+            print ""
+
+    if(not os.path.exists(policymanager_pidfile)):
+        sys.stdout.write('policymanager not running (no pid file)')
+        print ""
+    else: #os.path.exists(policymanager_pidfile)):
+        pm_file = open(policymanager_pidfile,"r")
+        pm_pid = pm_file.read()
+        pm_pid = pm_pid.rstrip()
+        if os.path.exists("/proc/" + pm_pid):
+            sys.stdout.write('policymanager running')
+            print ""
+        else:
+            sys.stdout.write('policymanager not running')
+            os.remove(policymanager_pidfile)
+            print ""
+
+    if(not os.path.exists(osckar_interface_vmm_pidfile)):
+        sys.stdout.write('vmminterface not running (no pid file)')
+        print ""
+    else: #os.path.exists(osckar_interface_vmm_pidfile)): 
+        vm_file = open(osckar_interface_vmm_pidfile,"r")
+        vm_pid = vm_file.read()
+        vm_pid = vm_pid.rstrip()
+        if os.path.exists("/proc/" + vm_pid):
+            sys.stdout.write("osckar-interface-vmm running")
+            print ""
+        else:
+            sys.stdout.write('osckar-interface-vmm not running')
+            os.remove(osckar_interface_vmm_pidfile)
+            print ""
+            
+    if(not os.path.exists(osckar_interface_builder_pidfile)):
+        sys.stdout.write('osckar-interface-builder not running (no pid file)')
+        print ""
+    else: #os.path.exists(osckar_interface_builder_pidfile)):
+        bd_file = open(osckar_interface_builder_pidfile,"r")
+        bd_pid = bd_file.read()
+        bd_pid = bd_pid.rstrip()
+        if os.path.exists("/proc/" + bd_pid):
+            sys.stdout.write('osckar-interface-builder running')
+            print ""
+        else:
+            sys.stdout.write('osckar-interface-builder not running')
+            os.remove(osckar_interface_builder_pidfile)
+            print ""
 
 def start():
     global eventchat_errfile
