@@ -45,3 +45,13 @@ class Osckar:
                     if eventName == name:
                         return [name,eventArgs] # return event's name and args
 
+    # generate a random challenge for challenge-response authentication
+    # TODO: actually implement this
+    def generateChallenge():
+        return ""
+
+    # validate a response to a challenge
+    # TODO: actually implement this
+    def validateResponse(loginName,challenge,response):
+        return 1
+

@@ -1,10 +1,16 @@
 #!/usr/bin/python -u
 
+# EventChat - v.0.1 (protocol 1)
+# Copyright 2009 Todd Deshane and Patrick F. Wilbur
+
 import SocketServer
 import threading
 import sys
+from time import strftime, localtime
 sys.path.append('/usr/share/osckar/lib/')
 import comm as c
+import osckar as o
+osckar = o.Osckar()
 
 
 if len(sys.argv) > 1 and sys.argv[1] == '--version':
@@ -17,10 +23,35 @@ if len(sys.argv) > 1 and sys.argv[1] == '--protocol-version':
 
 
 #Global variables
+comm = c.Comm()
+
 eventHandlerSockets = {}
 eHSlock = threading.Lock()
-comm = c.Comm()
+
+clientLoginNames = {}
+cLNlock = threading.Lock()
+
+clientChallenges = {}
+cCHlock = threading.Lock()
+
 PROCEDURE_LENGTH = 6        
+
+
+# append information to log (takes an array as input)
+# TODO: make this do something more than simply printing to the screen
+def appendLog(type,msg):
+    print strftime("%a, %d %b %Y %H:%M:%S", localtime()),
+    print type
+    for m in msg:
+        print "\t" + m,
+    print ''
+
+def errorLog(msg):
+    appendLog('ERROR',msg)
+def accessLog(msg):
+    appendLog('ACCESS',msg)
+def eventLog(msg):
+    appendLog('EVENT',msg)
 
 # EventChat Request Handler Class
 # Processes signals over a socket
@@ -31,9 +62,19 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
     # setup is called before the handle() method to perform any initialization 
     # actions required.
     def setup(self):
-        print self.client_address, 'connected!'
-        self.request.send('helloo')
-
+        accessLog(['CONNECT',self.client_address, 'connected'])
+        challenge = generateChallenge()
+        try:
+            # lock client challenges map and create new challenge
+            cCHlock.acquire()
+            clientChallenges[self.request] = challenge
+            cCHlock.release()
+        finally:
+            # unlock client challenges map
+            # handled in the finally to be more graceful
+            cCHlock.release()
+        # greet client, then riddle client with the challenge
+        self.request.send('helloo' + comm.makeChunk(challenge))
 
     # The handle function does all the work required to service a request.
     # Several instance attributes are available to it; the request is 
@@ -45,30 +86,55 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
             #do a try catch for various network related exception,
             #the exceptions are handled gracefully--just keep running
             try:
-                #listen for a procdure call, of fixed length
+                #listen for a procedure call, of fixed length
                 procedure = self.request.recv(PROCEDURE_LENGTH)
-                print "DEBUG:::procedure:::", procedure + ":::"
                 
                 # if a connect breaks during processing, the recv will
                 # return nothing and procedure will be false
                 # this is also common for nonpersistent clients
-                # (clients that just signal and quit)
-                #check for those cases here
+                # (clients that just signal and quit)...
+                # check for those cases here
                 if not procedure:
-                    print self.client_address, 'connection broken!'
+                    errorLog(['CONNECTION BROKEN',self.client_address,'connection broken'])
                     break 
-                
-                # someone is trying to register as a handler for an event
-                if procedure == 'regevt':  
-                    self.doRegisterEvent()
-                    
-                # someone is trying to signal an event
-                elif procedure == 'signal': # 
-                    self.doSignalEvent()
 
-                # someone is gracefully removing themselves as a handler
-                elif procedure == 'byebye':
-                    self.doRemoveHandler()
+                if procedure == 'clogin':
+                    # perform challenge-response authentication login
+                    self.doLogin()
+                elif self.getClientName(self.request) == '' or self.getChallenge(self.request) == '':
+                    # uh... this client just tried performing a procedure,
+                    # but the client has never logged in!  sounds fishy,
+                    # and we have no idea who this is, so let's log and ignore
+                    #
+                    accessLog(['UNAUTHENTICATED PROCEDURE CALL',self.client_address,self.request,
+                               'is not authenticated yet attempted to perform procedure',
+                               procedure])
+                else: # for all other procedures
+                    # check response in message and validate client's identity
+                    response = comm.readChunk(self.request)
+                    if osckar.validateResponse(self.getClientName(self.request),
+                                               self.getChallenge(self.request),response) == 1:
+                        # someone is trying to register as a handler for an event
+                        if procedure == 'regevt':  
+                            self.doRegisterEvent()
+                            
+                        # someone is trying to signal an event
+                        elif procedure == 'signal':  
+                            self.doSignalEvent()
+
+                        # someone is gracefully removing themselves as a handler
+                        elif procedure == 'byebye':
+                            self.doRemoveHandler()
+                            self.doLogout()
+
+                    else: # client failed our challenge-response verification
+                        accessLog(['INVALID AUTHENTICATION PROCEDURE CALL',
+                                   self.client_address,
+                                   self.getClientName(self.request),
+                                   self.request,
+                                   'provided invalid authentication response' +
+                                   ' while attempting to perform procedure',
+                                   procedure])
             
             #TODO: add a DEBUG mode to allow raising various events
             #add except cases for debugging, remove for production
@@ -79,20 +145,44 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
             except(TypeError):
                 raise
             ###
-            #leave these are in place to be a catch all, even in production
+            #leave these are in place to be a catch all, *even* in production (to keep system up!)
             except(ValueError):
-                print 'Malformed data recieved', sys.exc_info()[0]
+                errorLog(['MALFORMED DATA','malformed data recieved'])
+                print 'EventChat malformed data error:', sys.exc_info()[0]
             except:
-                print 'There was a general (probably network) error.',
-                print 'For your convenience, we ignored this:',sys.exc_info()[0]
+                errorLog(['GENERAL ERROR','an unrecognized error has occurred'])
+                print 'EventChat general (perhaps strange network?) error:',
+                print sys.exc_info()[0]
         return
 
 
     # finish is called after the handle() method to perform any clean-up actions 
     # If setup() or handle() raise an exception, this function will not be called.
     def finish(self):
+        accessLog(['DISCONNECT',self.client_address, 'disconnected'])
         print self.client_address, 'disconnected!'
         self.doRemoveHandler()
+        self.doLogout()
+
+    # Called when a client connects and requests to login
+    def doLogin(self):
+        #read the client's login name and response to challenge
+        loginName = comm.readChunk(self.request)
+        loginResponse = comm.readChunk(self.request)
+
+        # proceed with login only if client issues a valid response to our challenge
+        if validateResponse(loginName,clientChallenges[self.request],loginResponse) == 1:
+            try:
+                # lock client login names map and assign name to this connection
+                cLNlock.acquire() 
+                clientLoginNames[self.request] = loginName
+            finally:
+                # unlock client login names map
+                # handled in the finally to be more graceful
+                cLNlock.release()  
+            print self.client_address, 'successfully authenticated as', loginName
+        else:
+            print self.client_address, 'failed to authenticate as', loginName
 
     # Called during a regevt procedure call
     def doRegisterEvent(self):
@@ -111,16 +201,15 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
             # unlock event handler map
             # handled in the finally to be more graceful
             eHSlock.release()  
-        print self.client_address, 'now listening to event', eventName
+        eventLog(['REGISTER',self.client_address,clientLoginNames[self.request],
+                  self.request,'now listening to event', eventName])
 
     # Called during a signal procedure call
     def doSignalEvent(self):
         # read eventName from the socket
         eventName = comm.readChunk(self.request)
-        print "DEBUG: eventName ",  eventName
         # read event arguments from the socket
         eventArgs = comm.readChunk(self.request)
-        print "DEBUG: eventArgs: ", eventArgs
 
         # check if we have a handler for this event
         if eventName in eventHandlerSockets and \
@@ -128,18 +217,21 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
             #for each handler of this event
             for handler in eventHandlerSockets[eventName]: 
                 try:
-                    # singal the handler
+                    # signal the handler
                     handler.send('signal' + comm.makeChunk(eventName) +\
                                      comm.makeChunk(eventArgs))
                 except:
-                    print 'Error signaling one of the listeners.'
-                    print 'We will ignore it this time:',sys.exc_info()[0]
+                    errorLog(['SIGNAL COMMUNICATION ERROR',self.client_address,clientLoginNames[self.request],
+                              self.request,'signaled event', eventName,
+                              'with unreachable listener',clientLoginNames(handler),handler])
+                    print 'EventChat error while signaling a registered listener',sys.exc_info()[0]
             # end for each handler of this event
-            print self.client_address, 'has signaled event', eventName
         else:
-            print self.client_address, 'has signaled event', eventName,
-            print 'but there are no listeners!'
+            errorLog(['SIGNAL NO LISTENERS',self.client_address,clientLoginNames[self.request],
+                      self.request,'signaled event with no listeners', eventName])
             self.request.send('bounce' + comm.makeChunk(eventName))
+        eventLog(['SIGNAL',self.client_address,clientLoginNames[self.request],
+                  self.request,'signaled event', eventName])
 
     # Called during a byebye procedure call
     # Also used by finish() to do non-graceful cleanup
@@ -148,11 +240,36 @@ class ECRequestHandler(SocketServer.BaseRequestHandler):
             eHSlock.acquire()
             for eventName in eventHandlerSockets:
                 if self.request in eventHandlerSockets[eventName]:
-                    print self.client_address,
-                    print 'is no longer listening for event', eventName
                     eventHandlerSockets[eventName].remove(self.request)
+                    eventLog(['UNREGISTER',self.client_address,clientLoginNames[self.request],self.request,
+                              'is no longer listening for event', eventName])
         finally:
             eHSlock.release()
+
+    # Called during a byebye procedure call
+    # Also used by finish() to do non-graceful cleanup
+    def doLogout(self):
+        try:
+            cLNlock.acquire()
+            if self.request in clientLoginNames:
+                clientLoginNames.remove(self.request)
+                accessLog(['LOGOUT',self.client_address,clientLoginNames[self.request],self.request,
+                              'logged out', eventName])
+        finally:
+            cLNlock.release()
+        try:
+            cCHlock.acquire()
+            if self.request in clientChallenges:
+                clientChallenges.remove(self.request)
+        finally:
+            eCHlock.release()
+        
+    # get client login name if logged in
+    def getClientName(reqID):
+        if reqID in clientLoginNames:
+            return clientLoginNames[reqID]
+        else:
+            return ''
 
 #end Class ECRequestHandler
 
