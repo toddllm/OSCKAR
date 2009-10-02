@@ -33,6 +33,8 @@ sudo useradd policymanager -s /bin/sh
 sudo useradd vmminterface -s /bin/sh
 sudo useradd builderinterface -s /bin/sh
 
+#add vmminterface to libvirtd group
+sudo usermod -G libvirtd vmminterface
 
 #make installable/clean distribution of osckar
 mkdir -p ./dist/usr/sbin/
