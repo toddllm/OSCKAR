@@ -76,5 +76,12 @@ sudo chown -R eventchat /var/run/eventchat
 sudo chown -R policymanager /var/run/policymanager
 sudo chown -R vmminterface /var/run/osckar/vmminterface
 sudo chown -R builderinterface /var/run/osckar/builderinterface
+
+#give builderinterface the access it needs to run vmbuilder without entering a 
+#password
+sudo grep builderinterface /etc/sudoers
+if [ $? -eq 1 ]; then
+    echo 'builderinterface ALL=NOPASSWD: /usr/bin/vmbuilder' | sudo tee -a /etc/sudoers > /dev/null 
+fi
 echo 'Done'
 
