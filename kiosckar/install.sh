@@ -6,21 +6,9 @@ user='kiosk'
 #TODO add check for existence of OSCARcore
 #sudo apt-get install -y python
 
-sudo grep "$user" /etc/passwd
-if [ $? -eq 1 ]
-    then
-    echo "Creating $user user..."
-    sudo useradd -m -s /usr/local/bin/kiosckar $user -G libvirtd
-    sudo passwd $user
-fi
-
-echo 'Adding contents to xinit files... '
-echo 'exec xterm /usr/local/bin/kiosckar' | sudo tee /home/$user/.xsession 2>&1 > /dev/null
-echo 'exec xterm /usr/local/bin/kiosckar' | sudo tee /home/$user/.xinitrc 2>&1 > /dev/null
-
 echo -n 'Installing kiosckar... '
 sudo find . -name '*~' -exec rm {} \;
-sudo cp -r ./usr/local/bin/* /usr/local/bin/
+sudo cp -r ./usr/* /usr/
 if [ ! -e /var/kiosckar/images ]
     then
     sudo mkdir -p /var/kiosckar/images
@@ -32,4 +20,43 @@ if [ ! -e /etc/kiosckar/contracts ]
 fi
 sudo cp ./etc/kiosckar/kiosk_template.vmt /etc/kiosckar/
 sudo chown -R $user /etc/kiosckar
+echo 'Done'
+
+echo " "
+echo "kioskckar can be run either by normal users, or additionally as a specialized kiosk-mode"
+echo "user that guests to this system can use for launching personal virtual machines and appliances."
+echo " "
+echo -n "Do you wish to create and configure a specialized kiosk-mode user? (Y/n) [default:Y]:"
+read create
+if [ X$create == X ]
+     then
+     create='Y'
+fi
+if [ X$create != XY ]
+     then
+     exit 0
+fi
+
+echo -n "Enter a name that users will login with to use kiosk [default:$user]:"
+read usern
+if [ X$usern != X ]
+    then
+    user=$usern
+fi
+
+sudo grep "$user" /etc/passwd
+if [ $? -eq 1 ]
+    then
+    echo "Creating $user user..."
+    sudo useradd -m -s /usr/local/bin/kiosckar $user
+    sudo passwd $user
+fi
+
+#echo 'Adding contents to xinit files... '
+#echo 'exec xterm /usr/local/bin/kiosckar' | sudo tee /home/$user/.xsession 2>&1 > /dev/null
+#echo 'exec xterm /usr/local/bin/kiosckar' | sudo tee /home/$user/.xinitrc 2>&1 > /dev/null
+
+echo -n 'Setting default window manager for $user user to kiosckar-wm... '
+sudo echo '[Desktop]' > /home/$user/.dmrc
+sudo echo 'Session=kiosckar' >> /home/$user/.dmrc
 echo 'Done'
