@@ -1,22 +1,8 @@
-#!/usr/bin/python
-
-# KIOSCKAR - Kiosk User Interface (kiosk through OSCKAR)
-# Todd Deshane and Patrick F. Wilbur
-
 import os,sys
 sys.path.append('/usr/share/osckar/lib/')
 import osckar as o
 
 osckar = o.Osckar()
-
-
-path='/etc/kiosckar/contracts/'
-
-if len(sys.argv) > 1:
-    port = sys.argv[1]
-else:
-    port = 5000
-
 osckar.connect('localhost',port)
 osckar.registerEvent('VM_START_SUCCEEDED')
 osckar.registerEvent('VM_BUILD_SUCCEEDED')
@@ -52,31 +38,3 @@ def launch(VM):
     while osckar.waitForEvent('VM_START_SUCCEEDED') != VM:
         pass
     os.system('virt-viewer ' + VM)
-
-while True:
-    os.system("reset")
-    VMs = os.listdir(path)
-    print 'Menu:'
-    i = 1
-    for VM in VMs:
-        print '',i,VM
-        i += 1
-
-    print '',i,'Add VM'
-    print '',i+1,'Exit'
-
-    try:
-        choice = raw_input('Selection:')
-        choice = int(choice)
-    except:
-        print 'Invalid input'
-        choice = 0
-    if choice == i+1:
-        sys.exit(0)
-    elif choice == i:
-        addVM()
-    elif choice > 0 and choice < i:
-        launch(VMs[choice-1])
-
-    print ''
-
