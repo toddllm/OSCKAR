@@ -10,5 +10,13 @@
       <raise event="PolicyManager.send_subcontracts" argument="$ARG" />
       <raise event="vmm.start_vm" argument="$ARG" />
     </handle>
+    <handle event="SHUTDOWN_VM">
+      <raise event="PolicyManager.send_subcontracts" argument="$ARG" />
+      <raise event="vmm.shutdown_vm" argument="$ARG" />
+    </handle>
+    <handle event="DESTROY_VM">
+      <raise event="PolicyManager.send_subcontracts" argument="$ARG" />
+      <raise event="vmm.destroy_vm" argument="$ARG" />
+    </handle>
   </ruleset>
 </contract>
