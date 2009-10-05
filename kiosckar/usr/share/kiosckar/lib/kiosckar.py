@@ -36,3 +36,6 @@ def launch(path,VM):
     while osckar.waitForEvent('VM_START_SUCCEEDED') != VM:
         pass
     os.system('virt-viewer ' + VM)
+
+def destroy(VM):
+    osckar.signal('DESTROY_VM', VM)

@@ -28,12 +28,12 @@ while True:
         menu += "\"" + vm + "\" "
     menu += "\"ADD VM\" "
     menu += "\"EXIT\" "
-    output = Popen(["zenity  --list  --title  \"KIOSCKAR Main Menu\" --text \"Select an option (cancel to exit):\" --column \"Menu Options\" " + menu,], stdout=PIPE, shell=True).communicate()[0]
-    output = output.rstrip()
+    selection = Popen(["zenity  --list --width 500 --height 400 --title  \"KIOSCKAR Main Menu\" --text \"Select an option (cancel to exit):\" --column \"Menu Options\" " + menu,], stdout=PIPE, shell=True).communicate()[0]
+    selection = selection.rstrip()
 
-    if output == '' or output == 'EXIT':
+    if selection == '' or selection == 'EXIT':
         sys.exit(0)
-    elif output == 'ADD VM':
+    elif selection == 'ADD VM':
         vm_name = Popen(["zenity  --title \"Enter VM Name\" --entry --text \"Please enter a name for your new VM:\"",], stdout=PIPE, shell=True).communicate()[0]
         vm_name = vm_name.strip()
         if vm_name == '':
@@ -46,7 +46,8 @@ while True:
         kiosckar.addVM(vm_name,install_mirror)
         Popen(["kill " + progress_pid,], shell=True)
     else:
-        kiosckar.launch(path,output)
+        kiosckar.launch(path,selection)
+        kiosckar.destroy(selection)
 
     print ''
 
