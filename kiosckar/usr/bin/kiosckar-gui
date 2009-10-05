@@ -28,7 +28,7 @@ while True:
         menu += "\"" + vm + "\" "
     menu += "\"ADD VM\" "
     menu += "\"EXIT\" "
-    selection = Popen(["zenity  --list --width 500 --height 400 --title  \"KIOSCKAR Main Menu\" --text \"Select an option (cancel to exit):\" --column \"Menu Options\" " + menu,], stdout=PIPE, shell=True).communicate()[0]
+    selection = Popen(["zenity  --list --width 500 --height 400 --title  \"KIOSCKAR Main Menu\" --text \"Welcome to KIOSK (through OSCKAR)!\" --column \"Select an option (Cancel to exit)\" " + menu,], stdout=PIPE, shell=True).communicate()[0]
     selection = selection.rstrip()
 
     if selection == '' or selection == 'EXIT':
