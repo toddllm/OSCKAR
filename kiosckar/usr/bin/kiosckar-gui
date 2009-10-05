@@ -46,6 +46,7 @@ while True:
         kiosckar.addVM(vm_name,install_mirror)
         Popen(["kill " + progress_pid,], shell=True)
     else:
+        kiosckar.destroy(selection)
         kiosckar.launch(path,selection)
         kiosckar.destroy(selection)
 
