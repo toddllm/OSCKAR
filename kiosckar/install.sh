@@ -18,16 +18,18 @@ if [ ! -e /etc/kiosckar/contracts ]
     then
     sudo mkdir -p /etc/kiosckar/contracts
 fi
+sudo groupadd kiosckar
 sudo cp ./etc/kiosckar/kiosk_template.vmt /etc/kiosckar/
-sudo chown -R $user /etc/kiosckar
+sudo chown -R :kiosckar /etc/kiosckar
+sudo chmod -R g+w /etc/kiosckar/contracts
 echo 'Done'
 
 echo " "
 echo "kioskckar can be run either by normal users, or additionally as a specialized kiosk-mode"
 echo "user that guests to this system can use for launching personal virtual machines and appliances."
 echo " "
-echo -n "Do you wish to create and configure a specialized kiosk-mode user? (Y/n) [default:Y]:"
-read create
+#echo -n "Do you wish to create and configure a specialized kiosk-mode user? (Y/n) [default:Y]:"
+#read create
 if [ X$create == X ]
      then
      create='Y'
@@ -37,8 +39,8 @@ if [ X$create != XY ]
      exit 0
 fi
 
-echo -n "Enter a name that users will login with to use kiosk [default:$user]:"
-read usern
+#echo -n "Enter a name that users will login with to use kiosk [default:$user]:"
+#read usern
 if [ X$usern != X ]
     then
     user=$usern
@@ -48,7 +50,7 @@ sudo grep "$user" /etc/passwd
 if [ $? -eq 1 ]
     then
     echo "Creating $user user..."
-    sudo useradd -m -s /usr/local/bin/kiosckar $user
+    sudo useradd -G libvirtd,kiosckar -m -s /usr/local/bin/kiosckar $user
     sudo passwd $user
 fi
 
@@ -56,7 +58,7 @@ fi
 #echo 'exec xterm /usr/local/bin/kiosckar' | sudo tee /home/$user/.xsession 2>&1 > /dev/null
 #echo 'exec xterm /usr/local/bin/kiosckar' | sudo tee /home/$user/.xinitrc 2>&1 > /dev/null
 
-echo -n "Setting default window manager for $user user to kiosckar-wm... "
+echo -n "Setting default window manager for $user user to kiosckar-gui... "
 sudo echo '[Desktop]' > /home/$user/.dmrc
 sudo echo 'Session=kiosckar' >> /home/$user/.dmrc
 echo 'Done'
