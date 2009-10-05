@@ -70,8 +70,8 @@ sudo chown -R vmminterface /var/lib/osckar/interfaces/vmm
 #access to log directories
 sudo chown -R eventchat /var/log/eventchat
 sudo chown -R policymanager /var/log/policymanager
-sudo chown -R vmminterface /var/log/vmminterface
-sudo chown -R builderinterface /var/log/builderinterface
+sudo chown -R vmminterface /var/log/osckar/vmminterface
+sudo chown -R builderinterface /var/log/osckar/builderinterface
 
 #access to (/var/run) pid directories
 sudo chown -R eventchat /var/run/eventchat
