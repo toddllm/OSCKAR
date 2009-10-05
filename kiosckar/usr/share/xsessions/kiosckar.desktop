@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=kiosckar
-Comment=This session logs you into GNOME
-Exec=/usr/local/bin/kiosckar-wm
-TryExec=/usr/local/bin/kiosckar-wm
+Comment=This session logs you into KIOSCKAR-GUI
+Exec=/usr/bin/kiosckar-gui
+TryExec=/usr/bin/kiosckar-gui
 Icon=
 Type=Application
 X-Ubuntu-Gettext-Domain=gnome-session-2.0
