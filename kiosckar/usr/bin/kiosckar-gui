@@ -1,0 +1,52 @@
+#!/usr/bin/python
+
+# KIOSCKAR GUI - Kiosk User Interface (kiosk through OSCKAR)
+# Copyright 2009 Todd Deshane and Patrick F. Wilbur
+
+default_install_mirror = "http://archive.ubuntu.com/ubuntu"
+
+
+
+from subprocess import *
+import os,sys
+sys.path.append('/usr/share/kiosckar/lib/')
+import kiosckar
+
+path='/etc/kiosckar/contracts/'
+
+if len(sys.argv) > 1:
+    port = sys.argv[1]
+else:
+    port = 5000
+
+kiosckar.connect('localhost',port)
+
+while True:
+    menu = ''
+    VMs = os.listdir(path)
+    for vm in VMs:
+        menu += "\"" + vm + "\" "
+    menu += "\"ADD VM\" "
+    menu += "\"EXIT\" "
+    output = Popen(["zenity  --list  --title  \"KIOSCKAR Main Menu\" --text \"Select an option (cancel to exit):\" --column \"Menu Options\" " + menu,], stdout=PIPE, shell=True).communicate()[0]
+    output = output.rstrip()
+
+    if output == '' or output == 'EXIT':
+        sys.exit(0)
+    elif output == 'ADD VM':
+        vm_name = Popen(["zenity  --title \"Enter VM Name\" --entry --text \"Please enter a name for your new VM:\"",], stdout=PIPE, shell=True).communicate()[0]
+        vm_name = vm_name.strip()
+        if vm_name == '':
+            continue
+        install_mirror = Popen(["zenity  --title \"Choose Install Mirror\" --width 500 --entry --entry-text \"" + default_install_mirror + "\" --text \"Please enter an install mirror:\"",], stdout=PIPE, shell=True).communicate()[0]
+        install_mirror = install_mirror.strip()
+        if install_mirror == '':
+            continue
+        progress_pid = Popen(["while [ 1 -eq 1 ]; do sleep 1; echo 1; done | zenity --progress --pulsate --auto-kill & echo $!",], stdout=PIPE, shell=True).communicate()[0]
+        kiosckar.addVM(vm_name,install_mirror)
+        Popen(["kill " + progress_pid,], shell=True)
+    else:
+        kiosckar.launch(path,output)
+
+    print ''
+

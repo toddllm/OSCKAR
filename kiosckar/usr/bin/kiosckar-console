@@ -1,0 +1,46 @@
+#!/usr/bin/python
+
+# KIOSCKAR GUI - Kiosk User Interface (kiosk through OSCKAR)
+# Copyright 2009 Todd Deshane and Patrick F. Wilbur
+
+
+import os,sys
+sys.path.append('/usr/share/kiosckar/lib/')
+import kiosckar
+
+path='/etc/kiosckar/contracts/'
+
+if len(sys.argv) > 1:
+    port = sys.argv[1]
+else:
+    port = 5000
+
+kiosckar.connect('localhost',port)
+
+while True:
+    os.system("reset")
+    VMs = os.listdir(path)
+    print 'Menu:'
+    i = 1
+    for VM in VMs:
+        print '',i,VM
+        i += 1
+
+    print '',i,'Add VM'
+    print '',i+1,'Exit'
+
+    try:
+        choice = raw_input('Selection:')
+        choice = int(choice)
+    except:
+        print 'Invalid input'
+        choice = 0
+    if choice == i+1:
+        sys.exit(0)
+    elif choice == i:
+        kiosckar.addVM()
+    elif choice > 0 and choice < i:
+        kiosckar.launch(VMs[choice-1])
+
+    print ''
+
