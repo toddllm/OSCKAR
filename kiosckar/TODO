@@ -1,0 +1,6 @@
+- Replace prompting of password in install.sh with either a default password being set or a prompting of changing the password upon first login of kiosk user (if this cannot be done using GDM, we can do this in kiosckar-wm)
+
+- Look for commented-out lines in install.sh and make them commandline argument options for install.sh
+
+- Double-check and make sure that kiosckar's install.sh ensures all dependencies for kiosckar are installed
+

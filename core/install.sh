@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd `dirname $0`
+
 #detect supported platforms
 release=`grep DISTRIB_RELEASE /etc/lsb-release  | awk -F\= '{ print $2}'` 
 if [ X$release != X9.04 ] && [ X$release != X9.10 ]
