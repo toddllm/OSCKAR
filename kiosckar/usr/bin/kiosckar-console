@@ -18,7 +18,7 @@ else:
 kiosckar.connect('localhost',port)
 
 while True:
-    os.system("reset")
+    os.system("clear")
     VMs = os.listdir(path)
     print 'Menu:'
     i = 1
@@ -46,7 +46,9 @@ while True:
         vm_name = choice.rstrip()
         kiosckar.addVM(vm_name,mirror)
     elif choice > 0 and choice < i:
+        kiosckar.destroy(str(choice))
         kiosckar.launch(path,VMs[choice-1])
+        kiosckar.destroy(str(choice))
 
     print ''
 
