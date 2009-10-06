@@ -59,6 +59,6 @@ fi
 #echo 'exec xterm /usr/local/bin/kiosckar' | sudo tee /home/$user/.xinitrc 2>&1 > /dev/null
 
 echo -n "Setting default window manager for $user user to kiosckar-wm... "
-sudo echo '[Desktop]' > /home/$user/.dmrc
-sudo echo 'Session=kiosckar' >> /home/$user/.dmrc
+echo '[Desktop]' | sudo tee /home/$user/.dmrc > /dev/null 2>&1 
+echo 'Session=kiosckar' | sudo tee -a /home/$user/.dmrc > /dev/null 2>&1
 echo 'Done'

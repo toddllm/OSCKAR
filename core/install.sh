@@ -83,7 +83,7 @@ sudo chown -R builderinterface /var/run/osckar/builderinterface
 #password
 sudo grep builderinterface /etc/sudoers
 if [ $? -eq 1 ]; then
-    echo 'builderinterface ALL=NOPASSWD: /usr/bin/vmbuilder' | sudo tee -a /etc/sudoers > /dev/null 
+    echo 'builderinterface ALL=NOPASSWD: /usr/bin/vmbuilder' | sudo tee -a /etc/sudoers > /dev/null 2>&1
 fi
 echo 'Done'
 
