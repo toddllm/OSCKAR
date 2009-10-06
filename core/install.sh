@@ -39,6 +39,7 @@ sudo useradd builderinterface -s /bin/sh
 sudo usermod -G libvirtd vmminterface
 
 #make installable/clean distribution of osckar
+rm -rf ./dist
 mkdir -p ./dist/usr/sbin/
 mkdir -p ./dist/usr/share/
 mkdir -p ./dist/etc/
