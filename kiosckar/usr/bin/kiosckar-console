@@ -38,9 +38,15 @@ while True:
     if choice == i+1:
         sys.exit(0)
     elif choice == i:
-        kiosckar.addVM()
+	default_install_mirror = "http://archive.ubuntu.com/ubuntu"
+        mirror = raw_input('Enter install mirror [' + default_install_mirror + ']:')
+        if mirror.strip() == "":
+            mirror = default_install_mirror
+        choice = raw_input('Enter a VM name:')
+        vm_name = choice.rstrip()
+        kiosckar.addVM(vm_name,mirror)
     elif choice > 0 and choice < i:
-        kiosckar.launch(VMs[choice-1])
+        kiosckar.launch(path,VMs[choice-1])
 
     print ''
 
