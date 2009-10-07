@@ -1,0 +1,7 @@
+<contract id="windows-example">
+  <ruleset type="vmm">
+    <disks>
+      <cowdisk type="qcow2" cowbase="winxp-base.qcow2">winxp</cowdisk>
+    </disks>
+  </ruleset>
+</contract>
