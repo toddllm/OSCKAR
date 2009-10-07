@@ -31,7 +31,9 @@ def addVM(vm_name, install_mirror):
 
 def launch(path,VM):
     f = open(path + VM, 'r')
-    osckar.signal('IMPORT_VMC', f.read())
+    vmt = f.read()
+    vmc = vmt.replace('$VM_NAME', VM)
+    osckar.signal('IMPORT_VMC', vmc)
     osckar.signal('START_VM', VM)
     while osckar.waitForEvent('VM_START_SUCCEEDED') != VM:
         pass
