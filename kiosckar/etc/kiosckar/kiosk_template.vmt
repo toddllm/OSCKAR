@@ -24,37 +24,21 @@
     <installmirror>$INSTALL_MIRROR</installmirror>
     
   </ruleset>
-  <ruleset type="vmm-libvirt">
-    <domain type='kvm'>	
-      <name>$VM_NAME</name>
-      <memory>131072</memory>
-      <currentMemory>131072</currentMemory>
-      <vcpu>1</vcpu>
-      <os>
-	<type arch='x86_64' machine='pc'>hvm</type>
-	<boot dev='hd'/>
-      </os>
-      <features>
-	<acpi/>
-      </features>
-      <clock offset='utc'/>
-      <on_poweroff>destroy</on_poweroff>
-      <on_reboot>restart</on_reboot>
-      <on_crash>destroy</on_crash>
-      <devices>
-	<emulator>/usr/bin/kvm</emulator>
-	<disk type='file' device='disk'>
-	  <source file='/var/lib/osckar/images/$VM_NAME/$VM_NAME.qcow2'/>
-	  <target dev='hda' bus='ide'/>
-	</disk>
-	<interface type='network'>
-	  <mac address='52:54:00:38:84:a7'/>
-	  <source network='default'/>
-	  <model type='virtio'/>
-	</interface>
-	<input type='mouse' bus='ps2'/>
-	<graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1'/>
-      </devices>
-    </domain>
+  <ruleset type="vmm">
+    <name>$VM_NAME</name>
+    <memory>
+      <min>128</min>
+      <max>128</max>
+      <default>128</default>
+    </memory>
+    <disks>
+      <cowdisk type="qcow2" cowbase="/var/lib/osckar/images/test43/$VM_NAME.qcow2">$VM_NAME</cowdisk>
+    </disks>
+    <vnics>
+      <vnic model="e1000" type="bridge" />
+    </vnics>
+    <graphics>
+      <graphic type="sdl" />
+    </graphics>
   </ruleset>
 </contract>
