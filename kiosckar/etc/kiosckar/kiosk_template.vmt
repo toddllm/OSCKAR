@@ -38,7 +38,7 @@
       <vnic model="e1000" type="bridge" />
     </vnics>
     <graphics>
-      <graphic type="sdl" />
+      <graphic type="vnc" />
     </graphics>
   </ruleset>
 </contract>
