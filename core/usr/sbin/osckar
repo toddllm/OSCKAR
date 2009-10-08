@@ -5,6 +5,15 @@
 
 import sys,os,signal
 from subprocess import Popen,STDOUT,PIPE,call
+eventchat_logpath = "/var/log/eventchat/"
+eventchat_pidpath = "/var/run/eventchat/"
+policymanager_logpath = "/var/log/policymanager/"
+policymanager_pidpath = "/var/run/policymanager/"
+osckar_interface_vmm_logpath = "/var/log/osckar/vmminterface/"
+osckar_interface_vmm_pidpath = "/var/run/osckar/vmminterface/"
+osckar_interface_builder_logpath = "/var/log/osckar/builderinterface/"
+osckar_interface_builder_pidpath = "/var/run/osckar/builderinterface/"
+
 eventchat_logfile = "/var/log/eventchat/eventchat.log"
 eventchat_errfile = "/var/log/eventchat/eventchat.err"
 eventchat_pidfile = "/var/run/eventchat/eventchat.pid"
@@ -27,7 +36,6 @@ if len(sys.argv) < 3:
     PORT = str(5000)
 else:
     PORT = sys.argv[2]
-
 
 def restart():
     stop()
@@ -194,6 +202,15 @@ def status():
             print ""
 
 def start():
+    global eventchat_logpath
+    global eventchat_pidpath
+    global policymanager_logpath
+    global policymanager_pidpath
+    global osckar_interface_vmm_logpath
+    global osckar_interface_vmm_pidpath
+    global osckar_interface_builder_logpath
+    global osckar_interface_builder_pidpath
+
     global eventchat_errfile
     global eventchat_logfile
     global eventchat_pidfile
@@ -210,6 +227,29 @@ def start():
     global PORT
     print "Port: " + PORT
     print "Starting OSCKAR services on port: " + PORT
+
+    # Make pid file directories and log file directories
+
+    os.system('mkdir -p ' + eventchat_logpath + ' > /dev/null 2>&1')
+    os.system('mkdir -p ' + eventchat_pidpath + ' > /dev/null 2>&1')
+    os.system('mkdir -p ' + policymanager_logpath + ' > /dev/null 2>&1')
+    os.system('mkdir -p ' + policymanager_pidpath + ' > /dev/null 2>&1')
+    os.system('mkdir -p ' + osckar_interface_vmm_logpath + ' > /dev/null 2>&1')
+    os.system('mkdir -p ' + osckar_interface_vmm_pidpath + ' > /dev/null 2>&1')
+    os.system('mkdir -p ' + osckar_interface_builder_logpath +
+              ' > /dev/null 2>&1')
+    os.system('mkdir -p ' + osckar_interface_builder_pidpath +
+              ' > /dev/null 2>&1')
+
+    os.system('chown -R eventchat ' + eventchat_logpath)
+    os.system('chown -R eventchat ' + eventchat_pidpath)
+    os.system('chown -R policymanager ' + policymanager_logpath)
+    os.system('chown -R policymanager ' + policymanager_pidpath)
+    os.system('chown -R vmminterface ' + osckar_interface_vmm_logpath)
+    os.system('chown -R vmminterface ' + osckar_interface_vmm_pidpath)
+    os.system('chown -R builderinterface ' + osckar_interface_builder_logpath)
+    os.system('chown -R builderinterface ' + osckar_interface_builder_pidpath)
+
 
     sys.stdout.write('Starting eventchat...')
 
