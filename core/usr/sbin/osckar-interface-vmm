@@ -107,11 +107,11 @@ while 1:
             for vnic in doc.getElementsByTagName('vnics')[0].getElementsByTagName('vnic'):
                 if vnic.getAttribute('type') == "bridge":
                     if not vnic.hasAttribute('network'):
-                        bridges.append("br0")
+                        bridges.append("virbr0")
                     else:
                         bridges.append(vnic.getAttribute('network'))
                 else: #type not set, use default
-                    bridges.append("br0")
+                    bridges.append("virbr0")
             
             graphics = []
             for graphic in doc.getElementsByTagName('graphics')[0].getElementsByTagName('graphic'):
