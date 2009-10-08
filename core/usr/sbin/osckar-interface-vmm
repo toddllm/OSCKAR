@@ -94,13 +94,13 @@ while 1:
                 if cowdisk.getAttribute('type') == "qcow2":
                     print cowdisk.getAttribute('cowbase')
                     cowtempfile = ''
-                    #
-                    while cowtempfile == '' or os.path.exists(cowtempfile):
+                    # 
+                    cowpath = images_path
+                    while cowtempfile == '' or os.path.exists(cowpath + cowtempfile):
                         cowtempfile = cowdisk.childNodes[0].data + '-' + str(random.randrange(0,32000)) + ".qcow2"
                     #
-                    cowpath = images_path
-                    print "DEBUG cmd: " + "qemu-img create -f qcow2 -F qcow2 -b " + cowdisk.getAttribute('cowbase') + " " + cowtempfile
-                    os.system("qemu-img create -f qcow2 -F qcow2 -b " + cowdisk.getAttribute('cowbase') + " " + cowtempfile) 
+                    print "DEBUG cmd: " + "qemu-img create -f qcow2 -F qcow2 -b " + cowdisk.getAttribute('cowbase') + " " + cowpath + cowtempfile
+                    os.system("qemu-img create -f qcow2 -F qcow2 -b " + cowdisk.getAttribute('cowbase') + " " + cowpath + cowtempfile) 
                     disk_paths.append(cowpath + cowtempfile)
          
             bridges = []
