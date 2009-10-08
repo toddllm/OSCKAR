@@ -32,7 +32,7 @@
       <default>128</default>
     </memory>
     <disks>
-      <cowdisk type="qcow2" cowbase="/var/lib/osckar/images/test43/$VM_NAME.qcow2">$VM_NAME</cowdisk>
+      <cowdisk type="qcow2" cowbase="/var/lib/osckar/images/$VM_NAME/$VM_NAME.qcow2">$VM_NAME</cowdisk>
     </disks>
     <vnics>
       <vnic model="e1000" type="bridge" />
