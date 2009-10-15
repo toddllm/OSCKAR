@@ -42,13 +42,15 @@ while True:
         install_mirror = install_mirror.strip()
         if install_mirror == '':
             continue
-        progress_pid = Popen(["while [ 1 -eq 1 ]; do sleep 1; echo 1; done | zenity --progress --pulsate --auto-kill & echo $!",], stdout=PIPE, shell=True).communicate()[0]
+        progress_pid = Popen(["while [ 1 -eq 1 ]; echo 1; do sleep 1000; done | zenity --progress --pulsate --auto-kill --text \"Creating your new VM...\" & echo $!",], stdout=PIPE, shell=True).communicate()[0]
         kiosckar.addVM(vm_name,install_mirror)
         Popen(["kill " + progress_pid,], shell=True)
     else:
+#        progress_pid = Popen(["if [ $(zenity --question --title \"Running VM\" --text \"Running your VM (Cancel exits kiosk completely)...\" & echo $!; echo $?) -eq 1 ]; then killall kiosckar-gui; fi & echo $!",], stdout=PIPE, shell=True).communicate()[0]
         kiosckar.destroy(selection)
         kiosckar.launch(path,selection)
         kiosckar.destroy(selection)
+#        Popen(["kill " + progress_pid,], shell=True)
 
     print ''
 

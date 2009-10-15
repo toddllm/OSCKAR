@@ -36,7 +36,10 @@ def launch(path,VM):
     osckar.signal('IMPORT_VMC', vmc)
     osckar.signal('START_VM', VM)
     while osckar.waitForEvent('VM_START_SUCCEEDED') != VM:
-        pass
+        pass    
+    #osckar.signal('GET_VM_VNC_DISPLAY', VM)
+    #vncdisplay = osckar.waitForEvent('VM_VNC_DISPLAY')
+    #os.system('vncviewer -fullscreen ' + vncdisplay)
     os.system('virt-viewer ' + VM)
 
 def destroy(VM):
