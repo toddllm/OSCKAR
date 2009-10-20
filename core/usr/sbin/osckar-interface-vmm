@@ -118,6 +118,19 @@ while 1:
             for graphic in doc.getElementsByTagName('graphics')[0].getElementsByTagName('graphic'):
                 graphics.append(graphic.getAttribute('type'))
                     
+
+            displays = []
+            for display in doc.getElementsByTagName('displays')[0].getElementsByTagName('display'):
+                displays.append(diplay.getAttribute('type'))
+                    
+            features = []
+            for feature in doc.getElementsByTagName('features')[0].getElementsByTagName('feature'):
+                features.append(feature.childNodes[0].nodeValue)
+                    
+
+
+
+
             #generate output file
 
             lines = []
@@ -149,6 +162,18 @@ while 1:
 
 
             lines.append("</devices>")
+
+
+            for display in diplays:
+                    lines.append("<video type='" + display + "' />\n")
+                    lines.append("</video>")
+
+            lines.append("<features>\n")
+            for feature in features:
+                lines.append("<" + feature + "/>")
+            #end for feature in features:
+            lines.append("</features>")
+
             lines.append("</domain>\n")
 
             for line in lines:
