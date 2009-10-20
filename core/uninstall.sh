@@ -10,6 +10,10 @@ sudo rm -rf /var/lib/osckar/interfaces /var/lib/policymanager
 
 sudo rm -rf /var/log/eventchat /var/log/osckar /var/log/policymanager
 sudo rm -rf /var/run/eventchat /var/run/osckar /var/run/policymanager 
+sudo userdel eventchat
+sudo userdel policymanager
+sudo userdel builderinterface
+sudo userdel vmminterface
 
 echo 'OSCKAR uninstalled.'
 echo ''
