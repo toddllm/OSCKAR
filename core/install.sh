@@ -30,10 +30,10 @@ echo 'Done'
 
 #install OSCKARcore
 echo -n 'Installing OSCKARcore-alpha... '
-sudo useradd eventchat -s /bin/sh
-sudo useradd policymanager -s /bin/sh
-sudo useradd vmminterface -s /bin/sh
-sudo useradd builderinterface -s /bin/sh
+sudo useradd eventchat -r -s /bin/sh
+sudo useradd policymanager -r -s /bin/sh
+sudo useradd vmminterface -r -s /bin/sh
+sudo useradd builderinterface -r -s /bin/sh
 
 #add vmminterface to libvirtd group
 sudo usermod -G libvirtd vmminterface
