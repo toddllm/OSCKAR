@@ -27,9 +27,9 @@
   <ruleset type="vmm">
     <name>$VM_NAME</name>
     <memory>
-      <min>128</min>
-      <max>128</max>
-      <default>128</default>
+      <min>131072</min>
+      <max>3145728</max>
+      <default>1048576</default>
     </memory>
     <disks>
       <cowdisk type="qcow2" cowbase="/var/lib/osckar/images/$VM_NAME/$VM_NAME.qcow2">$VM_NAME</cowdisk>
