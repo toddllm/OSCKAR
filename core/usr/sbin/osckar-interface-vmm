@@ -105,6 +105,7 @@ while 1:
                     disk_paths.append(cowpath + cowtempfile)
          
             bridges = []
+            models = []
             for vnic in doc.getElementsByTagName('vnics')[0].getElementsByTagName('vnic'):
                 if vnic.getAttribute('type') == "bridge":
                     if not vnic.hasAttribute('network'):
@@ -114,6 +115,11 @@ while 1:
                 else: #type not set, use default
                     bridges.append("virbr0")
             
+                if vnic.hasAttribute('model'):
+                    models.append(vnic.getAttribute('model'))
+                else: #no model set, set default
+                    models.append("rtl8139")
+
             graphics = []
             for graphic in doc.getElementsByTagName('graphics')[0].getElementsByTagName('graphic'):
                 graphics.append(graphic.getAttribute('type'))
@@ -122,14 +128,11 @@ while 1:
             displays = []
             for display in doc.getElementsByTagName('displays')[0].getElementsByTagName('display'):
                 displays.append(display.getAttribute('type'))
+                print "DEBUG ***" + display.getAttribute('type') + "\n\n\n\n\n\n\n\n\n"
                     
             features = []
             for feature in doc.getElementsByTagName('features')[0].getElementsByTagName('feature'):
                 features.append(feature.childNodes[0].nodeValue)
-                    
-
-
-
 
             #generate output file
 
@@ -149,10 +152,14 @@ while 1:
                 lines.append("<source file='" + diskpath + "'/>\n")
                 lines.append("<target dev='hda' bus='ide' />\n")
                 lines.append("</disk>\n")
+
+            i = 0 #index for interface model list
             for bridge in bridges:
-                lines.append ("<interface type='bridge'>\n")
-                lines.append ("<source bridge='" + bridge + "' />\n")
-                lines.append ("</interface>\n")
+                lines.append("<interface type='bridge'>\n")
+                lines.append("<source bridge='" + bridge + "' />\n")
+                lines.append("<model type='" + models[i] + "' />\n")
+                i = i+1
+                lines.append("</interface>\n")
 
             for graphic in graphics:
                 if graphic == "vnc":
@@ -161,12 +168,15 @@ while 1:
                     lines.append("<graphics type='" + graphic + "' />\n")
 
 
-            lines.append("</devices>\n")
+
 
 
             for display in displays:
-                    lines.append("<video type='" + display + "'>\n")
+                    lines.append("<video>\n")
+                    lines.append("<model type='" + display + "' vram='9216' heads='1' />\n")
                     lines.append("</video>\n")
+
+            lines.append("</devices>\n")
 
             lines.append("<features>\n")
             for feature in features:
