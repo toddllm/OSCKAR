@@ -1,0 +1,28 @@
+<contract id="windows-example">
+  <ruleset type="vmm">
+    <os>
+      <type arch="x86_64">hvm</type>
+   </os>
+    <name>$VM_NAME</name>
+    <memory>
+      <min>1048576</min>
+      <max>1048576</max>
+      <default>1048576</default>
+    </memory>
+    <disks>
+      <cowdisk type="qcow2" cowbase="/var/lib/osckar/images/windows-example/windows-example.qcow2">windows-example</cowdisk>
+    </disks>
+    <vnics>
+      <vnic type="bridge" />
+    </vnics>
+    <graphics>
+      <graphic type="vnc" />
+    </graphics>
+    <displays>
+      <display type='vga' />
+    </displays>
+    <features>
+      <feature>acpi</feature>
+    </features>
+  </ruleset>
+</contract>
