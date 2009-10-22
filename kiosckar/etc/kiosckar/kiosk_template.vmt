@@ -35,10 +35,16 @@
       <cowdisk type="qcow2" cowbase="/var/lib/osckar/images/$VM_NAME/$VM_NAME.qcow2">$VM_NAME</cowdisk>
     </disks>
     <vnics>
-      <vnic model="e1000" type="bridge" />
+      <vnic type="bridge" />
     </vnics>
     <graphics>
       <graphic type="vnc" />
     </graphics>
+    <displays>	
+      <display type='vga' />
+    </displays>
+    <features>
+      <feature>acpi</feature>
+    </features>
   </ruleset>
 </contract>

@@ -121,7 +121,7 @@ while 1:
 
             displays = []
             for display in doc.getElementsByTagName('displays')[0].getElementsByTagName('display'):
-                displays.append(diplay.getAttribute('type'))
+                displays.append(display.getAttribute('type'))
                     
             features = []
             for feature in doc.getElementsByTagName('features')[0].getElementsByTagName('feature'):
@@ -161,18 +161,18 @@ while 1:
                     lines.append("<graphics type='" + graphic + "' />\n")
 
 
-            lines.append("</devices>")
+            lines.append("</devices>\n")
 
 
-            for display in diplays:
-                    lines.append("<video type='" + display + "' />\n")
-                    lines.append("</video>")
+            for display in displays:
+                    lines.append("<video type='" + display + "'>\n")
+                    lines.append("</video>\n")
 
             lines.append("<features>\n")
             for feature in features:
-                lines.append("<" + feature + "/>")
+                lines.append("<" + feature + "/>\n")
             #end for feature in features:
-            lines.append("</features>")
+            lines.append("</features>\n")
 
             lines.append("</domain>\n")
 
