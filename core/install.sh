@@ -34,6 +34,7 @@ sudo useradd eventchat -r -s /bin/sh
 sudo useradd policymanager -r -s /bin/sh
 sudo useradd vmminterface -r -s /bin/sh
 sudo useradd builderinterface -r -s /bin/sh
+sudo groupadd osckaradmins
 
 #add vmminterface to libvirtd group
 sudo usermod -G libvirtd vmminterface
@@ -46,6 +47,7 @@ mkdir -p ./dist/etc/
 mkdir -p ./dist/var/lib/
 mkdir -p ./dist/var/log/
 mkdir -p ./dist/var/run/
+mkdir -p ./dist/var/lib/osckar/images/
 
 sudo cp -rp ./usr/sbin/* ./dist/usr/sbin/
 sudo cp -rp ./usr/share/* ./dist/usr/share/
@@ -81,6 +83,10 @@ sudo chown -R eventchat /var/run/eventchat
 sudo chown -R policymanager /var/run/policymanager
 sudo chown -R vmminterface /var/run/osckar/vmminterface
 sudo chown -R builderinterface /var/run/osckar/builderinterface
+
+#access to (/var/lib/osckar/images) VM base image directories
+sudo chown -R builderinterface:osckaradmins /var/lib/osckar/images/
+sudo chmod -R g+w /var/lib/osckar/images/
 
 #give builderinterface the access it needs to run vmbuilder without entering a 
 #password
