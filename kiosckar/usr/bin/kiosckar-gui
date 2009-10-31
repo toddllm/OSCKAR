@@ -13,6 +13,9 @@ sys.path.append('/usr/share/kiosckar/lib/')
 import kiosckar
 
 path='/etc/kiosckar/contracts/'
+while os.system("pidof -xs eventchat") != 0: 
+	os.system("sleep 5")
+os.system("sleep 5")
 
 if len(sys.argv) > 1:
     port = sys.argv[1]
@@ -26,7 +29,6 @@ while True:
     VMs = os.listdir(path)
     for vm in VMs:
         menu += "\"" + vm + "\" "
-    menu += "\"ADD VM\" "
     menu += "\"EXIT\" "
     selection = Popen(["zenity  --list --width 500 --height 400 --title  \"KIOSCKAR Main Menu\" --text \"Welcome to KIOSK (through OSCKAR)!\" --column \"Select an option (Cancel to exit)\" " + menu,], stdout=PIPE, shell=True).communicate()[0]
     selection = selection.rstrip()
