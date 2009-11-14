@@ -29,7 +29,7 @@ def addVM(vm_name, install_mirror):
     while osckar.waitForEvent('VM_BUILD_SUCCEEDED') != vm_name:
         pass
 
-def launch(path,VM):
+def launch(path,VM,blocking=True):
     f = open(path + VM, 'r')
     vmt = f.read()
     vmc = vmt.replace('$VM_NAME', VM)
@@ -40,7 +40,8 @@ def launch(path,VM):
     #osckar.signal('GET_VM_VNC_DISPLAY', VM)
     #vncdisplay = osckar.waitForEvent('VM_VNC_DISPLAY')
     #os.system('vncviewer -fullscreen ' + vncdisplay)
-    os.system('virt-viewer ' + VM)
+    if blocking:
+      os.system('virt-viewer ' + VM)
 
 def destroy(VM):
     osckar.signal('DESTROY_VM', VM)
