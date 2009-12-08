@@ -1,3 +1,7 @@
+NameVirtualHost *:9713
+Listen 9713
+
+
 <VirtualHost *:9713>
 	ServerAdmin webmaster@localhost
 
