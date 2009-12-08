@@ -6,7 +6,7 @@
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
-	<Directory /var/www/>
+	<Directory /var/lib/web_kiosckar>
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride None
 		Order allow,deny
