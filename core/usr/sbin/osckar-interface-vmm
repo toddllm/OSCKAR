@@ -106,19 +106,23 @@ while 1:
          
             bridges = []
             models = []
-            for vnic in doc.getElementsByTagName('vnics')[0].getElementsByTagName('vnic'):
-                if vnic.getAttribute('type') == "bridge":
-                    if not vnic.hasAttribute('network'):
+            vnics = doc.getElementsByTagName('vnics')
+            if len(vnics)> 0:
+                for vnic in doc.getElementsByTagName('vnics')[0].getElementsByTagName('vnic'):
+                    if vnic.getAttribute('type') == "bridge":
+                        if not vnic.hasAttribute('network'):
+                            bridges.append("virbr0")
+                        else:
+                            bridges.append(vnic.getAttribute('network'))
+                    else: #type not set, use default
                         bridges.append("virbr0")
-                    else:
-                        bridges.append(vnic.getAttribute('network'))
-                else: #type not set, use default
-                    bridges.append("virbr0")
             
-                if vnic.hasAttribute('model'):
-                    models.append(vnic.getAttribute('model'))
-                else: #no model set, set default
-                    models.append("rtl8139")
+                    if vnic.hasAttribute('model'):
+                        models.append(vnic.getAttribute('model'))
+                    else: #no model set, set default
+                        models.append("rtl8139")
+                #end for
+            #end if
 
             graphics = []
             for graphic in doc.getElementsByTagName('graphics')[0].getElementsByTagName('graphic'):
