@@ -1,3 +1,5 @@
+http://clarkson.edu/projects/virtualization/osckar/
+
 OSCKAR enables individuals to design virtual appliances--self-contained 
 packages of any combination of pre-existing disk images, specifications 
 for on-the-fly image generation, and environmental security policies--to 
@@ -7,3 +9,5 @@ demonstrate OSCKAR's extensibility and configurability (thanks to its policy
 enforcement engine and contract specification), covering use cases that 
 include consolidated servers, public access terminals with kiosked operating 
 systems, rapid recovery desktops, and application segregation.
+
+https://github.com/deshantm/OSCKAR
