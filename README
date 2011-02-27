@@ -11,3 +11,5 @@ include consolidated servers, public access terminals with kiosked operating
 systems, rapid recovery desktops, and application segregation.
 
 https://github.com/deshantm/OSCKAR
+
+License: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0
