@@ -20,6 +20,7 @@ class Comm:
         return chunk
 
     def makeChunk(self,s):
+	s = str(s)
         chunk = ''
         while len(s) > 9999:
             chunk += "9999" + s[:9999]
